@@ -1,0 +1,166 @@
+id,level,bundle,requirement,test_name_hint,status
+DAT-001,MUST,scholarly-data-ingestion,"Before using a source, its current terms/auth/limits are verified and recorded in the source register with date and link.",test_DAT_001_*,todo
+DAT-002,MUST,scholarly-data-ingestion,Every source is accessed via a connector implementing `SourceConnector`; the rest of the app never imports source-specific code.,test_DAT_002_*,todo
+DAT-003,MUST,scholarly-data-ingestion,"External calls are made server-side only, with an identifying User-Agent and required contact/mailto/API-key parameters.",test_DAT_003_*,todo
+DAT-004,MUST,scholarly-data-ingestion,Rate limits are enforced client-side below the documented maximum; HTTP 429/5xx use exponential backoff with jitter (max 3 retries).,test_DAT_004_*,todo
+DAT-005,MUST,scholarly-data-ingestion,"Each connector has a timeout (default 8 s), circuit breaker, and returns structured errors; one failing source never fails a federated search.",test_DAT_005_*,todo
+DAT-006,MUST,scholarly-data-ingestion,Federated search responses include `source_status` per source and label partial results.,test_DAT_006_*,todo
+DAT-007,MUST,scholarly-data-ingestion,"DOIs are normalized (lowercase, no URL prefix); invalid DOIs are rejected into the import/ingest report, not stored.",test_DAT_007_*,todo
+DAT-008,MUST,scholarly-data-ingestion,"Missing fields are stored as `NULL`; no inference or fabrication of metadata, authors, or abstracts.",test_DAT_008_*,todo
+DAT-009,MUST,scholarly-data-ingestion,"`works.provenance` records `{source, fetched_at}` per populated field; field-level conflict resolution uses trust order: Crossref (bibliographic fields) > OpenAlex > PubMed (biomedical) > others; user edits outrank all.",test_DAT_009_*,todo
+DAT-010,MUST,scholarly-data-ingestion,Abstracts delivered as inverted indexes are reconstructed deterministically; abstracts are length-capped and sanitized (no HTML injection).,test_DAT_010_*,todo
+DAT-011,MUST,scholarly-data-ingestion,Identifier upserts are idempotent (unique DOI/PMID/OpenAlex id); concurrent ingests do not create duplicates.,test_DAT_011_*,todo
+DAT-012,MUST,scholarly-data-ingestion,Fuzzy dedup uses the thresholds in SKILL.md P7; scores and decisions are stored; auto-links are reversible.,test_DAT_012_*,todo
+DAT-013,MUST,scholarly-data-ingestion,"Errata/corrections/retraction notices and preprint↔published pairs are linked via relation, never silently merged.",test_DAT_013_*,todo
+DAT-014,MUST,scholarly-data-ingestion,"Responses are cached with per-source TTL (default search 1 h, work 7 d, citations 24 h) and a cache key containing normalized params.",test_DAT_014_*,todo
+DAT-015,SHOULD,scholarly-data-ingestion,"Citation graph expansion is lazy, depth ≤ 2, and capped (default 200 nodes) with ""load more"".",test_DAT_015_*,todo
+DAT-016,MUST,scholarly-data-ingestion,"Pagination uses the source's cursor mechanism; deep paging beyond a cap (default 1,000 results) is refused with guidance to refine the query.",test_DAT_016_*,todo
+DAT-017,MUST,scholarly-data-ingestion,"Connector tests use recorded, scrubbed fixtures covering success, empty, malformed, 429, and timeout; a nightly live smoke test is non-blocking.",test_DAT_017_*,todo
+DAT-018,MUST,scholarly-data-ingestion,No scraping of sites that disallow automated access or forbid it in terms; adding a new source requires an ADR.,test_DAT_018_*,todo
+DAT-019,SHOULD,scholarly-data-ingestion,"An optional BASE (or similar broad multilingual) connector may be added only after its access policy and reuse rights are verified (DAT-001) and an ADR is written; sources feeding topic maps must expose title, abstract, language, and year or be flagged incomplete.",test_DAT_019_*,todo
+LIB-001,MUST,library-reference-management,"Support import of RIS, BibTeX, CSV (with column mapping), and CSL-JSON.",test_LIB_001_*,todo
+LIB-002,MUST,library-reference-management,Imports run as background jobs with progress and are idempotent per file hash + project.,test_LIB_002_*,todo
+LIB-003,MUST,library-reference-management,"Parsing enforces limits: file ≤ 25 MB, ≤ 50,000 records, 60 s CPU; violations produce a clear error.",test_LIB_003_*,todo
+LIB-004,MUST,library-reference-management,Every import yields a parse report (imported/skipped/error with reason and line ref) stored and downloadable.,test_LIB_004_*,todo
+LIB-005,MUST,library-reference-management,"Records match to existing works by DOI/PMID, then fuzzy rules; unmatched create minimal works flagged `source=import`.",test_LIB_005_*,todo
+LIB-006,MUST,library-reference-management,Enrichment never overwrites user-provided fields; it fills nulls only.,test_LIB_006_*,todo
+LIB-007,MUST,library-reference-management,Dedup candidates enter a review queue; merge stores `merge_snapshot`; undo restores exact prior state.,test_LIB_007_*,todo
+LIB-008,MUST,library-reference-management,"Collections (tree), tags, and notes are project-scoped and soft-deletable.",test_LIB_008_*,todo
+LIB-009,MUST,library-reference-management,"Export in RIS, BibTeX, CSL-JSON, CSV; round-trip preserves title, authors, year, venue, DOI, abstract, keywords.",test_LIB_009_*,todo
+LIB-010,MUST,library-reference-management,"User file uploads validate MIME by content sniffing, size ≤ 50 MB, AV scan, and are stored in private object storage with sha256.",test_LIB_010_*,todo
+LIB-011,MUST,library-reference-management,Text extracted from user files is chunked into project-scoped chunks only (`scope='user_file'`).,test_LIB_011_*,todo
+LIB-012,MUST,library-reference-management,Citation formatting uses CSL styles via a maintained CSL processor; ≥ 5 common styles bundled.,test_LIB_012_*,todo
+LIB-013,MUST,library-reference-management,Imported text is treated as untrusted: sanitized for display; URLs inside are never fetched server-side.,test_LIB_013_*,todo
+LIB-014,SHOULD,library-reference-management,Zotero import via user API key or file; keys encrypted at rest; feature optional.,test_LIB_014_*,todo
+LIB-015,MUST,library-reference-management,"Library list supports 5,000 items with server-side pagination, sort, filter; p95 ≤ 1.5 s.",test_LIB_015_*,todo
+LIB-016,MUST,library-reference-management,"Deleting an item/file is soft first, hard-purged within 30 days; export includes user notes.",test_LIB_016_*,todo
+LIB-017,MUST,library-reference-management,PDF uploads offer `extract_only` mode: after successful extraction the original is deleted and only derived data is kept; deletion is verified and audited; failed extractions purge the file within 24 h.,test_LIB_017_*,todo
+SCR-001,MUST,screening-prisma-workflow,Each review project has a versioned protocol; screening is disabled until protocol v1 exists.,test_SCR_001_*,todo
+SCR-002,MUST,screening-prisma-workflow,Protocol edits create a new version; every decision stores `protocol_version`.,test_SCR_002_*,todo
+SCR-003,MUST,screening-prisma-workflow,Stages `title_abstract` and `full_text` are supported; items advance per `state-machine.md`.,test_SCR_003_*,todo
+SCR-004,MUST,screening-prisma-workflow,`screening_decisions` and `screening_resolutions` are append-only (DB grants enforce); corrections use `supersedes_id`.,test_SCR_004_*,todo
+SCR-005,MUST,screening-prisma-workflow,Exclude decisions require a reason from the controlled list; project may add reasons; global defaults seeded.,test_SCR_005_*,todo
+SCR-006,MUST,screening-prisma-workflow,Blind mode hides other reviewers' decisions and AI suggestions at the API level until the caller has decided on that item/stage.,test_SCR_006_*,todo
+SCR-007,MUST,screening-prisma-workflow,"Roles enforced server-side: owner (all), reviewer (decide), viewer (read).",test_SCR_007_*,todo
+SCR-008,MUST,screening-prisma-workflow,A verdict mismatch among required reviewers creates a conflict; unresolved conflicts block stage completion.,test_SCR_008_*,todo
+SCR-009,MUST,screening-prisma-workflow,Conflicts are closed only by a resolution row from an authorized resolver; reviewers' original decisions remain.,test_SCR_009_*,todo
+SCR-010,MUST,screening-prisma-workflow,"Raw agreement and Cohen's kappa are computed per stage from the log; kappa is undefined (shown as ""n/a"") when expected agreement = 1 or n < 2 reviewers.",test_SCR_010_*,todo
+SCR-011,MUST,screening-prisma-workflow,PRISMA 2020 flow counts are computed from import batches + decision log; no manual overrides.,test_SCR_011_*,todo
+SCR-012,MUST,screening-prisma-workflow,PRISMA endpoint verifies reconciliation (identified − duplicates = screened; screened − excluded = assessed; assessed − excluded = included) and returns discrepancies when violated.,test_SCR_012_*,todo
+SCR-013,MUST,screening-prisma-workflow,Full-text exclusion counts are broken down by reason in the PRISMA output.,test_SCR_013_*,todo
+SCR-014,MUST,screening-prisma-workflow,"AI suggestions include rationale mapped to protocol criteria, model name, prompt hash; stored separately from decisions.",test_SCR_014_*,todo
+SCR-015,MUST,screening-prisma-workflow,"AI suggestions are never applied automatically and never count as a reviewer; UI labels them ""suggestion"".",test_SCR_015_*,todo
+SCR-016,SHOULD,screening-prisma-workflow,"Record whether each human decision matched the displayed AI suggestion (for transparency, never to coerce).",test_SCR_016_*,todo
+SCR-017,MUST,screening-prisma-workflow,"Screening UI supports keyboard shortcuts, resume, undo-last (via superseding row), and meets WCAG 2.2 AA.",test_SCR_017_*,todo
+SCR-018,MUST,screening-prisma-workflow,"Decision log export (CSV) includes item id, DOI, stage, reviewer, verdict, reason, timestamp, protocol version.",test_SCR_018_*,todo
+SYN-001,MUST,grounded-synthesis-rag,Retrieval queries for private scopes always include `project_id` filtering; cross-project retrieval is impossible by construction and covered by a 2-tenant test.,test_SYN_001_*,todo
+SYN-002,MUST,grounded-synthesis-rag,"Chunking is section-aware, 300–500 tokens with ~15% overlap; chunk text, ordinal, section, and `embedding_model` stored.",test_SYN_002_*,todo
+SYN-003,MUST,grounded-synthesis-rag,Indexing jobs are idempotent and resumable; model change triggers versioned re-embedding without downtime.,test_SYN_003_*,todo
+SYN-004,MUST,grounded-synthesis-rag,Retrieval is hybrid (FTS + vector) with reciprocal rank fusion and a reranker; ranks and scores are stored per run.,test_SYN_004_*,todo
+SYN-005,MUST,grounded-synthesis-rag,A sufficiency gate refuses when distinct works < N (default 3) or top rerank score < threshold; refusal lists what was searched.,test_SYN_005_*,todo
+SYN-006,MUST,grounded-synthesis-rag,"Per-study extraction returns the defined fields with supporting chunk ids; absent info is `null`, never inferred.",test_SYN_006_*,todo
+SYN-007,MUST,grounded-synthesis-rag,Users can edit extractions; edits set `edited_by_user` and are tracked.,test_SYN_007_*,todo
+SYN-008,MUST,grounded-synthesis-rag,Synthesis output is validated JSON of atomic claims; each claim has ≥ 1 citation id from the retrieved set; invalid output gets one repair attempt then fails closed.,test_SYN_008_*,todo
+SYN-009,MUST,grounded-synthesis-rag,Every claim is independently verified against only its cited chunks; verdict stored and displayed.,test_SYN_009_*,todo
+SYN-010,MUST,grounded-synthesis-rag,Claims with `unsupported` verdict are removed from the answer or clearly flagged; `partially_supported` are flagged.,test_SYN_010_*,todo
+SYN-011,MUST,grounded-synthesis-rag,Citation integrity gate: every cited chunk → work exists; retracted works are flagged; DOIs shown when known.,test_SYN_011_*,todo
+SYN-012,MUST,grounded-synthesis-rag,Retrieved text is delimited and treated as untrusted; synthesis/verifier/extraction models have no tool access.,test_SYN_012_*,todo
+SYN-013,MUST,grounded-synthesis-rag,"Prompt-injection tests (malicious abstracts) pass: injected instructions do not alter output format, leak prompts, or add uncited claims.",test_SYN_013_*,todo
+SYN-014,MUST,grounded-synthesis-rag,"LLM/embedding calls go through provider-agnostic adapters with timeouts, retries, token/cost accounting.",test_SYN_014_*,todo
+SYN-015,MUST,grounded-synthesis-rag,Per-user weekly quota and global monthly budget enforced before work starts; clear message on exhaustion.,test_SYN_015_*,todo
+SYN-016,MUST,grounded-synthesis-rag,"On LLM failure, return retrieval-only results (ranked works/chunks) with an explanatory notice.",test_SYN_016_*,todo
+SYN-017,MUST,grounded-synthesis-rag,"Runs persist question, retrieval config, chunk ids/ranks, model names, prompt hashes, tokens, cost, claims, verdicts; prompts/completions text not logged.",test_SYN_017_*,todo
+SYN-018,MUST,grounded-synthesis-rag,A golden eval set (≥ 100 items incl. unanswerable and adversarial) runs nightly and pre-release; thresholds from `05 §5`.,test_SYN_018_*,todo
+SYN-019,SHOULD,grounded-synthesis-rag,"Streaming progress via SSE (retrieving, extracting, drafting, verifying).",test_SYN_019_*,todo
+SYN-020,MUST,grounded-synthesis-rag,"Any aggregate ""agreement"" display lists all underlying studies, N, designs, and a method disclaimer; otherwise not shown.",test_SYN_020_*,todo
+JRN-001,MUST,journal-matching-submission,Each journal data field's source and licence/terms for storage and redisplay are verified and recorded before ingestion.,test_JRN_001_*,todo
+JRN-002,MUST,journal-matching-submission,Journals store `data_as_of` and provenance per field; UI always shows source and date for metrics.,test_JRN_002_*,todo
+JRN-003,MUST,journal-matching-submission,"Journal search supports filters: category/field, quartile (if licensed), indexing (DOAJ etc.), OA, APC (none/≤ amount), language, country, publisher, free text.",test_JRN_003_*,todo
+JRN-004,MUST,journal-matching-submission,Hard filters apply before scoring; filtered-out journals never appear.,test_JRN_004_*,todo
+JRN-005,MUST,journal-matching-submission,"Match input is title + abstract (+ optional keywords); max 6,000 characters; input is not stored unless user saves it to a project.",test_JRN_005_*,todo
+JRN-006,MUST,journal-matching-submission,"Score components (semantic, keyword/topic, citation affinity) and weights are returned and displayed; weights configurable server-side.",test_JRN_006_*,todo
+JRN-007,MUST,journal-matching-submission,Each recommendation lists ≥ 3 similar recent articles from that journal with DOIs when available.,test_JRN_007_*,todo
+JRN-008,MUST,journal-matching-submission,UI/API never show acceptance probability or guarantees; copy reviewed against a disclaimer list.,test_JRN_008_*,todo
+JRN-009,MUST,journal-matching-submission,"Quality signals are factual and verifiable (indexing, OA model, APC); no ""predatory/safe"" labels; verification guide shown.",test_JRN_009_*,todo
+JRN-010,MUST,journal-matching-submission,"Submission checklist items cite source URL/line; unverifiable items are marked ""verify manually"".",test_JRN_010_*,todo
+JRN-011,MUST,journal-matching-submission,Data older than 12 months is visibly marked stale; refresh jobs scheduled.,test_JRN_011_*,todo
+JRN-012,MUST,journal-matching-submission,Offline eval set (≥ 60 labelled abstracts) tracks top-5 hit rate; regression below threshold blocks release.,test_JRN_012_*,todo
+ETH-001,MUST,research-integrity-ai-ethics,"All AI-generated/modified content is visibly labelled with model, date, and verification status.",test_ETH_001_*,todo
+ETH-002,MUST,research-integrity-ai-ethics,"Every AI feature call writes `ai_usage_log` (feature, stage, model, purpose, human_reviewed) without content text.",test_ETH_002_*,todo
+ETH-003,MUST,research-integrity-ai-ethics,Users can mark AI outputs as human-reviewed; the flag feeds disclosure statements.,test_ETH_003_*,todo
+ETH-004,MUST,research-integrity-ai-ethics,"The disclosure generator uses the usage log and templates, is editable, and states that journal-specific AI policies must be checked.",test_ETH_004_*,todo
+ETH-005,MUST,research-integrity-ai-ethics,"Reference-check job resolves DOIs/references, compares title/year/first author, and reports verified / unresolved / mismatch / retracted per item.",test_ETH_005_*,todo
+ETH-006,MUST,research-integrity-ai-ethics,Reference checks never auto-modify the user's references; changes require explicit confirmation.,test_ETH_006_*,todo
+ETH-007,MUST,research-integrity-ai-ethics,"Retraction/correction status is checked via the registered data source, shown with check date in library, search, synthesis.",test_ETH_007_*,todo
+ETH-008,MUST,research-integrity-ai-ethics,"Writing-assist modes are limited to outline, critique, language editing, structure checks; no fabricated data/references/peer-review text.",test_ETH_008_*,todo
+ETH-009,MUST,research-integrity-ai-ethics,No feature is built to evade AI detectors or conceal AI use; requests are declined with an alternative.,test_ETH_009_*,todo
+ETH-010,MUST,research-integrity-ai-ethics,"Unpublished manuscripts/uploads are private-scoped, excluded from logs and global indexes, not used for training, deleted on request within SLA.",test_ETH_010_*,todo
+ETH-011,MUST,research-integrity-ai-ethics,Provider settings for retention/training opt-out are recorded in `docs/subprocessors.md` and checked in release checklist.,test_ETH_011_*,todo
+ETH-012,MUST,research-integrity-ai-ethics,"A Coverage Notes panel lists sources searched, known gaps, and AI limitations; included in exports.",test_ETH_012_*,todo
+ETH-013,SHOULD,research-integrity-ai-ethics,UI copy reminds authors they remain accountable for all content and citations.,test_ETH_013_*,todo
+ETH-014,MUST,research-integrity-ai-ethics,Disclosure and labelling features have automated tests; copy reviewed for no compliance guarantees.,test_ETH_014_*,todo
+ETH-015,MUST,research-integrity-ai-ethics,"Outputs of mapping, positioning, and gap analysis use relative wording (""in the analyzed set""), never claim novelty/first/no prior work, and automated copy scans enforce this.",test_ETH_015_*,todo
+MAP-001,MUST,literature-mapping-positioning,"Every map/lineage run has an explicit scope (search result set or library subset); scope, parameters, seed, embedding model, and code version are stored in `map_runs`.",test_MAP_001_*,todo
+MAP-002,MUST,literature-mapping-positioning,Runs are capped (default 500 records); larger scopes are refused with guidance; records lacking a title are excluded and reported.,test_MAP_002_*,todo
+MAP-003,MUST,literature-mapping-positioning,"Runs are deterministic: identical inputs, parameters, seed, and models produce identical clusters/lineage (tested).",test_MAP_003_*,todo
+MAP-004,MUST,literature-mapping-positioning,"Cluster labels derive from metadata keywords (deterministic c-TF-IDF); optional LLM labels are constrained to the cluster's keyword set, marked AI-generated, and logged per ETH.",test_MAP_004_*,todo
+MAP-005,MUST,literature-mapping-positioning,Clustering uses multilingual embeddings so mixed-language sets work; record language per item and show language mix.,test_MAP_005_*,todo
+MAP-006,MUST,literature-mapping-positioning,"Topic map UI sizes clusters by member count, supports click-through lists and ""add cluster to library"", exports PNG/SVG/CSV, and offers an accessible table/list alternative.",test_MAP_006_*,todo
+MAP-007,MUST,literature-mapping-positioning,"Lineage edges use only in-set evidence: citation, semantic similarity, keyword/concept overlap, chronology; each edge stores its component scores.",test_MAP_007_*,todo
+MAP-008,MUST,literature-mapping-positioning,Chronology hard rule: a parent's year ≤ child's year; same-year links require citation evidence.,test_MAP_008_*,todo
+MAP-009,MUST,literature-mapping-positioning,"Confidence bands (High/Medium/Low) follow `algorithms.md`; Low confidence yields ""Needs review"" and no auto-assigned parent.",test_MAP_009_*,todo
+MAP-010,MUST,literature-mapping-positioning,"Families are produced by the documented algorithm with a minimum size (default 3); others are ""Unplaced""; roots are identified by rule, not guessed.",test_MAP_010_*,todo
+MAP-011,MUST,literature-mapping-positioning,"The audit table lists every paper with branch, parent, evidence types, confidence, status, and missing-metadata flags; it is sortable, filterable, searchable, and CSV-exportable.",test_MAP_011_*,todo
+MAP-012,MUST,literature-mapping-positioning,"Every visual placement (map, tree, lineage) links to its audit row and stored evidence; nothing is rendered without evidence.",test_MAP_012_*,todo
+MAP-013,MUST,literature-mapping-positioning,"User overrides of parent/branch are allowed, tracked (who, when, previous value), keep machine evidence unchanged, and can be reset.",test_MAP_013_*,todo
+MAP-014,MUST,literature-mapping-positioning,"Data-quality gaps (missing abstract, DOI, year, references, keywords) are flagged with reason codes and surfaced in the table.",test_MAP_014_*,todo
+MAP-015,MUST,literature-mapping-positioning,"Manuscript positioning returns closest family, top-3 parent candidates with component scores, and shared vs distinctive concepts; copy says ""closest in the analyzed set"" and never claims novelty.",test_MAP_015_*,todo
+MAP-016,MUST,literature-mapping-positioning,Manuscript text is processed in private scope; `retain_text=false` by default; only derived vectors/results persist; deletion on request; never logged.,test_MAP_016_*,todo
+MAP-017,MUST,literature-mapping-positioning,"The gap view emits typed signals (unresolved condition, future-work, lineage gap, data-quality), each with source work, ≤ 300-character excerpt from open-access or user-owned text, and extractor version; a persistent banner states a gap is not global novelty.",test_MAP_017_*,todo
+MAP-018,MUST,literature-mapping-positioning,"The module never generates related-work prose; optional AI may only rewrite evidence summaries, labelled and logged per ETH-001/ETH-002.",test_MAP_018_*,todo
+MAP-019,SHOULD,literature-mapping-positioning,"Botanical tree, lineage map, and table views share one analysis without recomputation; lineage diagram exports to SVG/PNG using our own visual language.",test_MAP_019_*,todo
+ENG-001,MUST,fullstack-engineering-standards,"Monorepo layout per `repo-layout.md`; `make dev` boots all services; health endpoints (`/healthz`, `/readyz`) exist.",test_ENG_001_*,todo
+ENG-002,MUST,fullstack-engineering-standards,API is contract-first: OpenAPI is updated before implementation; CI verifies implementation ⊆ contract.,test_ENG_002_*,todo
+ENG-003,MUST,fullstack-engineering-standards,"Config is read from environment, validated at boot (Pydantic Settings); production refuses dev defaults/empty secrets.",test_ENG_003_*,todo
+ENG-004,MUST,fullstack-engineering-standards,"Alembic migrations are reversible, tested up/down, and non-destructive via multi-step patterns.",test_ENG_004_*,todo
+ENG-005,MUST,fullstack-engineering-standards,Backend follows router→service→repository boundaries; no cross-module imports except through service interfaces.,test_ENG_005_*,todo
+ENG-006,MUST,fullstack-engineering-standards,Errors use RFC 7807 with stable `code` and `request_id`; no stack traces or internal ids leak.,test_ENG_006_*,todo
+ENG-007,MUST,fullstack-engineering-standards,"Auth uses single-use, 15-min magic links, secure/httpOnly/sameSite cookies, session rotation, CSRF protection, rate limits.",test_ENG_007_*,todo
+ENG-008,MUST,fullstack-engineering-standards,Authorization (owner/reviewer/viewer) is enforced server-side in services; deny by default; covered by role-matrix tests.,test_ENG_008_*,todo
+ENG-009,MUST,fullstack-engineering-standards,"Background jobs are idempotent with `dedupe_key`, bounded retries, status API, and cancellation where applicable.",test_ENG_009_*,todo
+ENG-010,MUST,fullstack-engineering-standards,JSON logs with `request_id`; OTel traces across API→worker→connector→LLM; user content and secrets never logged.,test_ENG_010_*,todo
+ENG-011,MUST,fullstack-engineering-standards,"List endpoints use cursor pagination with max page size (default 25, max 100).",test_ENG_011_*,todo
+ENG-012,MUST,fullstack-engineering-standards,"Static quality gates: ruff + mypy (strict on new code), ESLint + TS strict; failures block merge.",test_ENG_012_*,todo
+ENG-013,SHOULD,fullstack-engineering-standards,UI supports `en` and `id` via ICU message catalogs; no hard-coded user-facing strings; locale-aware dates/numbers.,test_ENG_013_*,todo
+ENG-014,MUST,fullstack-engineering-standards,Frontend meets WCAG 2.2 AA on core screens; axe checks run in e2e.,test_ENG_014_*,todo
+ENG-015,MUST,fullstack-engineering-standards,"Frontend uses generated API client; every view has loading, empty, and error states; optimistic updates only for non-audit actions.",test_ENG_015_*,todo
+ENG-016,SHOULD,fullstack-engineering-standards,"Performance budgets: initial JS ≤ 250 KB gz per route, LCP ≤ 2.5 s on mid-tier mobile profile.",test_ENG_016_*,todo
+ENG-017,SHOULD,fullstack-engineering-standards,Risky features sit behind feature flags with documented rollback.,test_ENG_017_*,todo
+ENG-018,MUST,fullstack-engineering-standards,"README, runbooks, ADRs, `.env.example`, and `docs/PROJECT_STATE.md` are updated with each relevant change.",test_ENG_018_*,todo
+ENG-019,MUST,fullstack-engineering-standards,`/me/export` and `/me` DELETE are implemented end-to-end with job status and tests.,test_ENG_019_*,todo
+ENG-020,MUST,fullstack-engineering-standards,"Dependencies are pinned by lockfile, minimal, preferably ≥ 14 days old; additions need justification (and ADR for frameworks/services).",test_ENG_020_*,todo
+QAS-001,MUST,qa-security-deployment,"CI runs lint, type-check, unit, integration, and build on every PR; main protected.",test_QAS_001_*,todo
+QAS-002,MUST,qa-security-deployment,"Lint/type failures block merge (ruff, mypy, ESLint, tsc).",test_QAS_002_*,todo
+QAS-003,MUST,qa-security-deployment,"Unit coverage ≥ 85% on core modules (dedup, normalization, kappa, PRISMA, parsers, scoring).",test_QAS_003_*,todo
+QAS-004,MUST,qa-security-deployment,A script verifies every MUST requirement ID in scope has ≥ 1 test named `test_<ID>_*`; missing coverage fails CI.,test_QAS_004_*,todo
+QAS-005,MUST,qa-security-deployment,Secret scanning runs pre-commit and in CI; leaked secrets block merge and trigger rotation.,test_QAS_005_*,todo
+QAS-006,MUST,qa-security-deployment,"Shared fixtures exist: two tenants, role matrix users, recorded connector responses, golden RAG set loader.",test_QAS_006_*,todo
+QAS-007,MUST,qa-security-deployment,Integration tests use real Postgres+pgvector and Redis (testcontainers).,test_QAS_007_*,todo
+QAS-008,MUST,qa-security-deployment,Every migration is tested upgrade→downgrade→upgrade on a populated fixture DB.,test_QAS_008_*,todo
+QAS-009,MUST,qa-security-deployment,"Tenant isolation tests prove no cross-project reads/writes in library, screening, retrieval, synthesis, files.",test_QAS_009_*,todo
+QAS-010,MUST,qa-security-deployment,Role-matrix tests cover owner/reviewer/viewer for every project route.,test_QAS_010_*,todo
+QAS-011,MUST,qa-security-deployment,"Connector tests use scrubbed fixtures (success, empty, malformed, 429, timeout).",test_QAS_011_*,todo
+QAS-012,MUST,qa-security-deployment,schemathesis (or equivalent) runs against the OpenAPI contract; no 5xx and no schema violations.,test_QAS_012_*,todo
+QAS-013,MUST,qa-security-deployment,Playwright e2e covers search→import→dedup→screen→PRISMA→synthesis→export and auth flows.,test_QAS_013_*,todo
+QAS-014,MUST,qa-security-deployment,axe-core runs on core screens; no serious/critical violations.,test_QAS_014_*,todo
+QAS-015,MUST,qa-security-deployment,"SAST, dependency audit, and container scan run in CI; high/critical findings block unless an ADR accepts risk with expiry.",test_QAS_015_*,todo
+QAS-016,MUST,qa-security-deployment,"DAST baseline (e.g., ZAP) runs on staging per release; findings triaged.",test_QAS_016_*,todo
+QAS-017,MUST,qa-security-deployment,"k6 load tests meet PRD latency targets for search, decisions, and synthesis queueing.",test_QAS_017_*,todo
+QAS-018,MUST,qa-security-deployment,"AI evals (SYN-018, JRN-012) run nightly and pre-release; threshold regressions block release.",test_QAS_018_*,todo
+QAS-019,MUST,qa-security-deployment,"Metrics/alerts exist for error rate, queue depth, connector errors, LLM cost/quota, latency, cert expiry.",test_QAS_019_*,todo
+QAS-020,MUST,qa-security-deployment,Backups verified by a documented restore test at least quarterly; RPO/RTO documented.,test_QAS_020_*,todo
+QAS-021,MUST,qa-security-deployment,Release checklist executed and recorded; rollback plan documented and rehearsed on staging.,test_QAS_021_*,todo
+QAS-022,MUST,qa-security-deployment,"Retention jobs, export, and deletion flows implemented and tested; sub-processor list current.",test_QAS_022_*,todo
+QAS-023,MUST,qa-security-deployment,"Runbooks exist for connector outage, LLM outage, queue backlog, cost spike, data deletion request, security incident.",test_QAS_023_*,todo
+QAS-024,MUST,qa-security-deployment,"Security headers (HSTS, CSP, X-Content-Type-Options, frame protections), cookie flags, and rate limits are asserted by automated tests.",test_QAS_024_*,todo
+QAS-025,MUST,qa-security-deployment,"Golden mapping fixtures (determinism, chronology rule, cluster NMI, lineage top-1/top-3, evidence integrity, wording scan, manuscript privacy) run in CI and pre-release; threshold regressions block release.",test_QAS_025_*,todo

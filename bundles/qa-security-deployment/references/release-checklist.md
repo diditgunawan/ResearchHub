@@ -1,0 +1,12 @@
+# Release checklist
+- [ ] All MUST requirement IDs in scope pass; coverage script green
+- [ ] Contract, e2e, a11y, security scans green; no unaccepted high/critical findings
+- [ ] AI evals ≥ thresholds (SYN-018, JRN-012); prompt/model changes recorded
+- [ ] Source register rows verified in last 90 days; licences respected
+- [ ] Migrations dry-run on staging snapshot; rollback steps written
+- [ ] Secrets rotated if any exposure; `.env.example` current; prod refuses dev defaults
+- [ ] Privacy: sub-processors, retention, export/delete tested; policy pages live; human legal review recorded
+- [ ] Observability: dashboards/alerts verified with synthetic failure
+- [ ] Runbooks reviewed; on-call/owner known
+- [ ] ETH checks: labelling, usage log, disclosure generator, coverage notes, no detector-evasion features
+- [ ] Changelog + version tag; PROJECT_STATE updated

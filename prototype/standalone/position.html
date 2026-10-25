@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5 · Position & gaps — ResearchForge prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Source+Serif+4:wght@600&display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:#12202B;background:#F6F8F9}
+h1,h2,h3{font-family:'Source Serif 4',Georgia,serif;margin:0;font-weight:600}
+p{margin:0}
+.nav a{display:block;padding:10px 14px;border-radius:8px;color:#34495A;text-decoration:none;font-size:14px}
+.nav a.on{background:#E3F0F5;color:#0B4A63;font-weight:600}
+.card{background:#fff;border:1px solid #D7DEE3;border-radius:12px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid #C5CED5;color:#34495A;background:#fff}
+.ok{background:#E4F3EA;color:#14532D;border-color:#B7DEC5}
+.warn{background:#FDF0DC;color:#7A3E00;border-color:#EBCB98}
+.bad{background:#FBE4E4;color:#8A1C1C;border-color:#EBB5B5}
+.info{background:#E3F0F5;color:#0B4A63;border-color:#B5D5E2}
+.btn{font:600 14px Inter,sans-serif;padding:10px 16px;min-height:44px;border-radius:8px;border:1px solid #0B5C7A;background:#fff;color:#0B5C7A;cursor:pointer}
+.btn.p{background:#0B5C7A;color:#fff}
+.muted{color:#4A5B68;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;border-radius:4px;background:#E3E9ED;overflow:hidden}
+.bar i{display:block;height:8px;background:#0B5C7A}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;color:#4A5B68;font-weight:600;padding:8px 10px;border-bottom:1px solid #D7DEE3}
+td{padding:9px 10px;border-bottom:1px solid #EEF2F4}
+</style>
+</head>
+<body>
+<div style="display:flex;width:100%;min-height:800px;box-sizing:border-box">
+<aside style="width:220px;flex:none;background:#fff;border-right:1px solid #D7DEE3;padding:20px 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px">
+<div><h2 style="font-size:20px;color:#0B4A63">ResearchForge</h2><p class="muted" style="margin-top:4px">Thesis · Urban heat &amp; health</p></div>
+<nav class="nav" aria-label="Project"><a href="#">Search</a><a href="#">Library</a><a href="#">Screening</a><a href="#">Synthesis</a><a href="#">Map &amp; lineage</a><a href="#" class="on">Position &amp; gaps</a><a href="#">Journals</a><a href="#">Check</a></nav>
+<p class="muted" style="margin-top:auto">Sample data for prototype</p>
+</aside>
+<main style="flex:1;min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+<div class="row" style="justify-content:space-between"><h1 style="font-size:26px">Position my paper</h1><span class="chip info">Text not retained</span></div>
+<div class="card" style="padding:12px 16px;background:#E3F0F5;border-color:#B5D5E2"><p style="font-size:14px;color:#0B3A4D">Results are relative to the 38 papers you analysed. They are not a claim of novelty.</p></div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<section class="card" style="width:380px;flex:none;padding:16px"><label for="ms" class="muted">Title and abstract</label>
+<textarea id="ms" rows="9" style="width:100%;box-sizing:border-box;margin-top:6px;padding:10px;border:1px solid #8695A1;border-radius:8px;font:400 14px/1.5 Inter,sans-serif;color:#12202B">Neighbourhood cooling and heat-related cardiac events in older adults: a spatial analysis. [Your abstract here]</textarea>
+<div class="row" style="margin-top:10px"><button class="btn p">Compare</button><button class="btn">Upload PDF</button></div></section>
+<section style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+<div class="card" style="padding:18px 20px"><p class="muted">Closest in the analyzed set</p><h2 style="font-size:22px;margin-top:2px">Heat–mortality time series</h2>
+<div class="row" style="margin-top:6px"><span class="chip ok">Strong fit · 0.81</span><span class="muted">Runner-up: Green-space moderation · Moderate 0.62</span></div>
+<p class="muted" style="margin-top:14px"><b>Likely parents</b></p>
+<table><tr><th>Paper</th><th>Citation</th><th>Semantic</th><th>Keyword</th><th>Chronology</th></tr><tr><td>Study D (2018)</td><td>—</td><td>0.84</td><td>0.61</td><td>0.90</td></tr><tr><td>Study E (2020)</td><td>—</td><td>0.77</td><td>0.58</td><td>1.00</td></tr><tr><td>Study B (2013)</td><td>—</td><td>0.66</td><td>0.40</td><td>0.60</td></tr></table>
+<div style="display:flex;gap:24px;margin-top:14px;flex-wrap:wrap"><div><p class="muted"><b>Shared concepts</b></p><div class="row" style="margin-top:6px"><span class="chip">heat exposure</span><span class="chip">older adults</span><span class="chip">cardiac events</span></div></div>
+<div><p class="muted"><b>Distinctive in your paper</b></p><div class="row" style="margin-top:6px"><span class="chip info">spatial analysis</span><span class="chip info">neighbourhood cooling</span></div></div></div></div>
+<div class="card" style="padding:16px 20px"><div class="row"><h3 style="font-size:17px">Gaps in this set</h3><span class="chip info" style="font-weight:600">Unresolved</span><span class="chip">Future work</span><span class="chip">Lineage</span><span class="chip">Data quality</span></div>
+<div style="margin-top:10px;font-size:14px;line-height:1.5"><p><b>Night-time heat exposure</b> is mentioned as unresolved in 5 papers.</p><p class="muted" style="margin-top:2px">Sample excerpt from an open-access paper · linked to source</p>
+<p style="margin-top:10px"><b>Cooling interventions</b> have no successor after 2019 in this set.</p><p class="muted" style="margin-top:2px">May reflect how the set was collected.</p>
+<p style="margin-top:10px"><b>3 works</b> lack an abstract, so they were placed with low confidence.</p></div></div>
+</section></div></main>
+</div>
+</body>
+</html>

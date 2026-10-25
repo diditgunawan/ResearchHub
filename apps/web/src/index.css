@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rf-ground: #F6F8F9;
+  --rf-surface: #FFFFFF;
+  --rf-ink: #12202B;
+  --rf-muted: #4A5B68;
+  --rf-nav-text: #34495A;
+  --rf-primary: #0B5C7A;
+  --rf-primary-strong: #0B4A63;
+  --rf-line: #D7DEE3;
+  --rf-line-input: #8695A1;
+  --rf-chip-border: #C5CED5;
+  --rf-bar-track: #E3E9ED;
+  --rf-info-bg: #E3F0F5;
+  --rf-info-text: #0B4A63;
+  --rf-info-border: #B5D5E2;
+  --rf-ok-bg: #E4F3EA;
+  --rf-ok-text: #14532D;
+  --rf-ok-border: #B7DEC5;
+  --rf-warn-bg: #FDF0DC;
+  --rf-warn-text: #7A3E00;
+  --rf-warn-border: #EBCB98;
+  --rf-bad-bg: #FBE4E4;
+  --rf-bad-text: #8A1C1C;
+  --rf-bad-border: #EBB5B5;
+  --rf-highlight-include: #D3EBDB;
+  --rf-highlight-exclude: #FBDDB5;
+  --rf-font-body: Inter, system-ui, sans-serif;
+  --rf-font-display: 'Source Serif 4', Georgia, serif;
+  --rf-radius-input: 8px;
+  --rf-radius-card: 12px;
+  --rf-touch: 44px;
+}
+
+body {
+  font-family: var(--rf-font-body);
+  background-color: var(--rf-ground);
+  color: var(--rf-ink);
+  margin: 0;
+  padding: 0;
+}

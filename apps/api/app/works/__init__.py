@@ -1,0 +1,1 @@
+"""Canonical scholarly works module."""

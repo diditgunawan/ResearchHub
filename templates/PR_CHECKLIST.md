@@ -1,0 +1,11 @@
+## PR checklist (QAS merge gate)
+- [ ] Requirement IDs cited in title/body
+- [ ] Tests added/updated (`test_<ID>_...`) and passing
+- [ ] OpenAPI updated if API changed; contract tests pass
+- [ ] Migration reversible; tested up/down
+- [ ] No secrets, no PII or manuscript text in logs
+- [ ] Tenant isolation considered (project_id filter / ACL)
+- [ ] AI output paths: verification + labelling + usage log (ETH)
+- [ ] External source usage matches register (G3/G4)
+- [ ] Docs / PROJECT_STATE / ADR updated
+- [ ] a11y + i18n strings for UI changes

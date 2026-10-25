@@ -1,0 +1,822 @@
+# ResearchForge OpenAPI contract v0.3 (validated with openapi-spec-validator). Source of truth: update BEFORE code (ENG-002).
+openapi: 3.1.0
+info:
+  title: ResearchForge API
+  version: 0.1.0
+  description: Contract-first API. Implementation MUST match; CI runs schemathesis against it (QAS-012).
+servers:
+- url: /api/v1
+security:
+- cookieAuth: []
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: rf_session
+  schemas:
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        code:
+          type: string
+        request_id:
+          type: string
+    Page:
+      type: object
+      properties:
+        next_cursor:
+          type:
+          - string
+          - 'null'
+        total_estimate:
+          type: integer
+    Work:
+      type: object
+      required:
+      - id
+      - title
+      properties:
+        id:
+          type: string
+          format: uuid
+        doi:
+          type:
+          - string
+          - 'null'
+        title:
+          type: string
+        abstract:
+          type:
+          - string
+          - 'null'
+        year:
+          type:
+          - integer
+          - 'null'
+        authors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              orcid:
+                type:
+                - string
+                - 'null'
+        venue_name:
+          type:
+          - string
+          - 'null'
+        is_oa:
+          type:
+          - boolean
+          - 'null'
+        oa_url:
+          type:
+          - string
+          - 'null'
+        retracted:
+          type: boolean
+        provenance:
+          type: object
+          description: field -> {source, fetched_at}
+    Claim:
+      type: object
+      required:
+      - id
+      - text
+      - citations
+      - verified
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        citations:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: chunk id
+        verified:
+          type: boolean
+        verdict:
+          type: string
+          enum:
+          - supported
+          - partially_supported
+          - unsupported
+          - not_checked
+  responses:
+    Problem:
+      description: Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+paths:
+  /auth/magic-link:
+    post:
+      security: []
+      summary: Request login link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '202':
+          description: Accepted
+  /auth/session:
+    delete:
+      summary: Logout
+      responses:
+        '204':
+          description: OK
+  /me:
+    get:
+      summary: Current user
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete account and data
+      responses:
+        '202':
+          description: Accepted
+  /projects:
+    get:
+      summary: List projects
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create project
+      responses:
+        '201':
+          description: Created
+  /projects/{projectId}/members:
+    post:
+      summary: Invite member (owner only)
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '201':
+          description: Created
+  /works/search:
+    get:
+      summary: Federated search over open sources
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 500
+      - name: year_from
+        in: query
+        schema:
+          type: integer
+      - name: year_to
+        in: query
+        schema:
+          type: integer
+      - name: oa_only
+        in: query
+        schema:
+          type: boolean
+      - name: sources
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - openalex
+            - pubmed
+            - crossref
+        style: form
+        explode: false
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Work'
+                  page:
+                    $ref: '#/components/schemas/Page'
+                  source_status:
+                    type: object
+                    description: per-source ok|timeout|error
+        '429':
+          $ref: '#/components/responses/Problem'
+  /works/{workId}:
+    get:
+      summary: Get work
+      parameters:
+      - name: workId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+        '404':
+          $ref: '#/components/responses/Problem'
+  /works/{workId}/citations:
+    get:
+      summary: Cited-by and references (depth<=2)
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: workId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/library/items:
+    get:
+      summary: List library items
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      summary: Add works by id
+      responses:
+        '201':
+          description: Created
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/imports:
+    post:
+      summary: Upload RIS/BibTeX/CSV/CSL-JSON (multipart)
+      responses:
+        '202':
+          description: Job accepted
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/exports:
+    post:
+      summary: Export library (format param)
+      responses:
+        '202':
+          description: Job accepted
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/dedup/candidates:
+    get:
+      summary: Review queue
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/dedup/candidates/{id}/decision:
+    post:
+      summary: Merge or keep separate
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/protocols:
+    post:
+      summary: Create new protocol version
+      responses:
+        '201':
+          description: Created
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/screening/queue:
+    get:
+      summary: Next items for caller (blind-aware)
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: stage
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - title_abstract
+          - full_text
+      responses:
+        '200':
+          description: OK
+  /projects/{projectId}/screening/decisions:
+    post:
+      summary: Append decision
+      responses:
+        '201':
+          description: Created
+        '409':
+          $ref: '#/components/responses/Problem'
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/screening/conflicts:
+    get:
+      summary: Unresolved conflicts
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/screening/resolutions:
+    post:
+      summary: Resolve conflict
+      responses:
+        '201':
+          description: Created
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/screening/agreement:
+    get:
+      summary: Cohen's kappa + raw agreement per stage
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/prisma:
+    get:
+      summary: PRISMA 2020 flow counts computed from log
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/screening/suggestions:
+    post:
+      summary: Request AI suggestions (never applies decisions)
+      responses:
+        '202':
+          description: Job accepted
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/synthesis:
+    post:
+      summary: Start grounded synthesis run
+      responses:
+        '202':
+          description: Accepted
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/synthesis/{runId}:
+    get:
+      summary: Run status/result
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  answer_md:
+                    type: string
+                  claims:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Claim'
+                  refusal_reason:
+                    type: string
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/synthesis/{runId}/events:
+    get:
+      summary: SSE progress stream
+      responses:
+        '200':
+          description: text/event-stream
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/extractions:
+    post:
+      summary: Run structured extraction for items
+      responses:
+        '202':
+          description: Accepted
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/reference-checks:
+    post:
+      summary: Verify a reference list
+      responses:
+        '202':
+          description: Accepted
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/ai-disclosure:
+    get:
+      summary: Generate disclosure statement from usage log
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /projects/{projectId}/maps:
+    get:
+      summary: List map and lineage runs
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Start topic-map run from a scope (cap 500 records)
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: Accepted
+        '422':
+          $ref: '#/components/responses/Problem'
+  /projects/{projectId}/maps/{runId}:
+    get:
+      summary: Clusters, members, params, status
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+  /projects/{projectId}/maps/{runId}/export:
+    get:
+      summary: Export csv|svg|png|json
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: format
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - csv
+          - svg
+          - png
+          - json
+      responses:
+        '200':
+          description: File
+  /projects/{projectId}/lineage:
+    post:
+      summary: Build families and lineage for a scope
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: Accepted
+  /projects/{projectId}/lineage/{runId}:
+    get:
+      summary: Nodes, edges, bands, evidence
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+  /projects/{projectId}/lineage/{runId}/audit:
+    get:
+      summary: Audit table rows (filter/sort; format=csv supported)
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+  /projects/{projectId}/lineage/{runId}/nodes/{workId}/override:
+    put:
+      summary: Override parent or branch (tracked)
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: workId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Reset override
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: workId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: OK
+  /projects/{projectId}/positioning:
+    post:
+      summary: Compare manuscript to a lineage run (text not retained unless retain_text=true)
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '202':
+          description: Accepted
+  /projects/{projectId}/positioning/{id}:
+    get:
+      summary: Closest family, top-3 parents, concepts
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+  /projects/{projectId}/lineage/{runId}/gaps:
+    get:
+      summary: Typed gap signals with excerpts and banner text
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+  /journals/search:
+    get:
+      summary: Filter journals
+      responses:
+        '200':
+          description: OK
+  /journals/match:
+    post:
+      summary: Rank journals for title+abstract
+      responses:
+        '200':
+          description: Ranked list with score components and data_as_of
+  /me/export:
+    post:
+      summary: Export all personal data
+      responses:
+        '202':
+          description: Accepted

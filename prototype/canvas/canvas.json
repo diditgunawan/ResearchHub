@@ -1,0 +1,83 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-24T02:10:00Z"
+ },
+ "title": "ResearchForge — UI/UX Prototype",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 800,
+   "title": "1 · Search & topic map",
+   "expand": "fill",
+   "is_interactive": false
+  },
+  "Screening.dc.html": {
+   "x": 1360,
+   "y": 0,
+   "w": 1280,
+   "h": 800,
+   "title": "2 · Screening",
+   "expand": "fill",
+   "is_interactive": false
+  },
+  "Synthesis.dc.html": {
+   "x": 2720,
+   "y": 0,
+   "w": 1280,
+   "h": 800,
+   "title": "3 · Grounded synthesis",
+   "expand": "fill",
+   "is_interactive": false
+  },
+  "Lineage.dc.html": {
+   "x": 0,
+   "y": 920,
+   "w": 1280,
+   "h": 800,
+   "title": "4 · Lineage & audit",
+   "expand": "fill",
+   "is_interactive": false
+  },
+  "Position.dc.html": {
+   "x": 1360,
+   "y": 920,
+   "w": 1280,
+   "h": 800,
+   "title": "5 · Position & gaps",
+   "expand": "fill",
+   "is_interactive": false
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Screening.dc.html",
+  "Synthesis.dc.html",
+  "Lineage.dc.html",
+  "Position.dc.html"
+ ],
+ "notes": {
+  "t1": {
+   "x": 0,
+   "y": -280,
+   "text": "ResearchForge: core screens",
+   "kind": "title1",
+   "maxW": 4000
+  },
+  "s1": {
+   "x": 2720,
+   "y": 940,
+   "w": 420,
+   "text": "Design rules shown here: every AI output is labelled; every claim has a verification state; blind mode locks peers and suggestions; every placement has evidence; analysis wording is always relative to the analysed set.",
+   "size": "s",
+   "fill": "teal"
+  }
+ }
+}

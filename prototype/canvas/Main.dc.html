@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1 · Search & topic map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Source+Serif+4:wght@600&display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:#12202B;background:#F6F8F9}
+h1,h2,h3{font-family:'Source Serif 4',Georgia,serif;margin:0;font-weight:600}
+p{margin:0}
+.nav a{display:block;padding:10px 14px;border-radius:8px;color:#34495A;text-decoration:none;font-size:14px}
+.nav a.on{background:#E3F0F5;color:#0B4A63;font-weight:600}
+.card{background:#fff;border:1px solid #D7DEE3;border-radius:12px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid #C5CED5;color:#34495A;background:#fff}
+.ok{background:#E4F3EA;color:#14532D;border-color:#B7DEC5}
+.warn{background:#FDF0DC;color:#7A3E00;border-color:#EBCB98}
+.bad{background:#FBE4E4;color:#8A1C1C;border-color:#EBB5B5}
+.info{background:#E3F0F5;color:#0B4A63;border-color:#B5D5E2}
+.btn{font:600 14px Inter,sans-serif;padding:10px 16px;min-height:44px;border-radius:8px;border:1px solid #0B5C7A;background:#fff;color:#0B5C7A;cursor:pointer}
+.btn.p{background:#0B5C7A;color:#fff}
+.muted{color:#4A5B68;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;border-radius:4px;background:#E3E9ED;overflow:hidden}
+.bar i{display:block;height:8px;background:#0B5C7A}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;color:#4A5B68;font-weight:600;padding:8px 10px;border-bottom:1px solid #D7DEE3}
+td{padding:9px 10px;border-bottom:1px solid #EEF2F4}
+</style>
+</helmet>
+<div style="display:flex;width:100%;min-height:800px;box-sizing:border-box">
+<aside style="width:220px;flex:none;background:#fff;border-right:1px solid #D7DEE3;padding:20px 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px">
+<div><h2 style="font-size:20px;color:#0B4A63">ResearchForge</h2><p class="muted" style="margin-top:4px">Thesis · Urban heat &amp; health</p></div>
+<nav class="nav" aria-label="Project"><a href="#" class="on">Search</a><a href="#">Library</a><a href="#">Screening</a><a href="#">Synthesis</a><a href="#">Map &amp; lineage</a><a href="#">Position &amp; gaps</a><a href="#">Journals</a><a href="#">Check</a></nav>
+<p class="muted" style="margin-top:auto">Sample data for prototype</p>
+</aside>
+<main style="flex:1;min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+<div class="row" style="flex-wrap:nowrap"><label for="q" style="position:absolute;width:1px;height:1px;overflow:hidden">Search works</label>
+<input id="q" value="urban heat island and cardiovascular mortality" style="flex:1;min-height:44px;padding:0 14px;font:400 15px Inter,sans-serif;border:1px solid #8695A1;border-radius:8px;background:#fff;color:#12202B">
+<button class="btn p">Search</button></div>
+<div class="row"><span class="chip">2015–2026</span><span class="chip">Open access only</span><span class="chip">Article, Review</span><span class="chip">Language: any</span></div>
+<div class="row muted"><span class="chip ok">OpenAlex · ok</span><span class="chip ok">PubMed · ok</span><span class="chip warn">Crossref · timed out</span><span>Partial results are labelled by source.</span></div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<section style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px" aria-label="Results">
+<article class="card" style="padding:16px 18px"><h3 style="font-size:17px">Heat exposure and cardiovascular mortality: a multi-city time-series analysis</h3>
+<p class="muted" style="margin-top:4px">Author A, Author B · Journal of Sample Studies · 2022</p>
+<div class="row" style="margin-top:8px"><span class="chip ok">Open access</span><span class="chip">Review</span><span class="muted">Source: OpenAlex · fetched 24 Oct 2026</span></div>
+<div class="row" style="margin-top:10px"><button class="btn p">Add to library</button><button class="btn">Details</button></div></article>
+<article class="card" style="padding:16px 18px"><h3 style="font-size:17px">Neighbourhood green space and heat-related hospital admissions</h3>
+<p class="muted" style="margin-top:4px">Author C, Author D · Urban Health Letters · 2020</p>
+<div class="row" style="margin-top:8px"><span class="chip bad">Retracted</span><span class="muted">Checked 24 Oct 2026 via Crossref · notice linked</span></div>
+<div class="row" style="margin-top:10px"><button class="btn">Add anyway (warning)</button><button class="btn">View notice</button></div></article>
+<article class="card" style="padding:16px 18px"><h3 style="font-size:17px">Kajian suhu perkotaan dan risiko penyakit jantung pada lansia</h3>
+<p class="muted" style="margin-top:4px">Penulis E · Jurnal Kesehatan Contoh · 2023</p>
+<div class="row" style="margin-top:8px"><span class="chip info">Bahasa Indonesia</span><span class="chip">Abstract: not available</span><span class="muted">Source: PubMed · fetched 24 Oct 2026</span></div>
+<div class="row" style="margin-top:10px"><button class="btn p">Add to library</button><button class="btn">Details</button></div></article>
+</section>
+<aside class="card" style="width:340px;flex:none;padding:16px" aria-label="Topic map">
+<h3 style="font-size:17px">Topic map of these results</h3><p class="muted" style="margin-top:4px">214 works · labels come from metadata keywords</p>
+<svg viewBox="0 0 308 200" width="100%" role="img" aria-label="Five topic clusters sized by number of works" style="margin-top:8px">
+<circle cx="100" cy="95" r="70" fill="#CFE6EF" stroke="#0B5C7A"/><text x="100" y="92" text-anchor="middle" font-size="12" fill="#0B3A4D">Heat waves &amp;</text><text x="100" y="108" text-anchor="middle" font-size="12" fill="#0B3A4D">mortality · 86</text>
+<circle cx="224" cy="62" r="48" fill="#D9ECDF" stroke="#2F7D4F"/><text x="224" y="60" text-anchor="middle" font-size="11" fill="#14532D">Urban green</text><text x="224" y="75" text-anchor="middle" font-size="11" fill="#14532D">space · 52</text>
+<circle cx="232" cy="150" r="36" fill="#FBE6C6" stroke="#B45309"/><text x="232" y="148" text-anchor="middle" font-size="11" fill="#7A3E00">Older adults</text><text x="232" y="163" text-anchor="middle" font-size="11" fill="#7A3E00">· 38</text>
+<circle cx="140" cy="176" r="22" fill="#EBDDF3" stroke="#6B3F86"/><text x="140" y="180" text-anchor="middle" font-size="10" fill="#4A2A60">Cooling · 22</text>
+<circle cx="40" cy="178" r="16" fill="#fff" stroke="#6B7C88" stroke-dasharray="4 3"/><text x="40" y="182" text-anchor="middle" font-size="10" fill="#34495A">Other</text>
+</svg>
+<div class="row" style="margin-top:8px"><button class="btn">View as list</button><button class="btn p">Add cluster to library</button></div>
+<p class="muted" style="margin-top:10px">Same inputs and seed give the same map. Export: PNG, SVG, CSV.</p></aside>
+</div></main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

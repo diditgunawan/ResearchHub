@@ -1,0 +1,126 @@
+{
+ "name": "ResearchForge tokens v0.1",
+ "note": "Extracted from prototype v0.1; placeholders until a brand is chosen. All text/background pairs below meet WCAG AA as used.",
+ "color": {
+  "ground": "#F6F8F9",
+  "surface": "#FFFFFF",
+  "ink": "#12202B",
+  "muted": "#4A5B68",
+  "nav-text": "#34495A",
+  "primary": "#0B5C7A",
+  "primary-strong": "#0B4A63",
+  "line": "#D7DEE3",
+  "line-input": "#8695A1",
+  "chip-border": "#C5CED5",
+  "bar-track": "#E3E9ED",
+  "info": {
+   "bg": "#E3F0F5",
+   "text": "#0B4A63",
+   "border": "#B5D5E2"
+  },
+  "ok": {
+   "bg": "#E4F3EA",
+   "text": "#14532D",
+   "border": "#B7DEC5"
+  },
+  "warn": {
+   "bg": "#FDF0DC",
+   "text": "#7A3E00",
+   "border": "#EBCB98"
+  },
+  "bad": {
+   "bg": "#FBE4E4",
+   "text": "#8A1C1C",
+   "border": "#EBB5B5"
+  },
+  "highlight-include": "#D3EBDB",
+  "highlight-exclude": "#FBDDB5",
+  "cluster": [
+   {
+    "fill": "#CFE6EF",
+    "stroke": "#0B5C7A",
+    "text": "#0B3A4D"
+   },
+   {
+    "fill": "#D9ECDF",
+    "stroke": "#2F7D4F",
+    "text": "#14532D"
+   },
+   {
+    "fill": "#FBE6C6",
+    "stroke": "#B45309",
+    "text": "#7A3E00"
+   },
+   {
+    "fill": "#EBDDF3",
+    "stroke": "#6B3F86",
+    "text": "#4A2A60"
+   },
+   {
+    "fill": "#FFFFFF",
+    "stroke": "#6B7C88",
+    "text": "#34495A",
+    "dashed": true
+   }
+  ]
+ },
+ "font": {
+  "body": "Inter, system-ui, sans-serif",
+  "display": "'Source Serif 4', Georgia, serif",
+  "weights": {
+   "body": [
+    400,
+    600
+   ],
+   "display": [
+    600
+   ]
+  },
+  "size": {
+   "xs": 12,
+   "sm": 13,
+   "base": 14,
+   "md": 15,
+   "lg": 17,
+   "h2": 22,
+   "h1": 26
+  }
+ },
+ "radius": {
+  "input": 8,
+  "card": 12,
+  "pill": 999
+ },
+ "space": {
+  "unit": 4,
+  "card-padding": [
+   16,
+   24
+  ],
+  "gap": [
+   10,
+   14,
+   20
+  ]
+ },
+ "layout": {
+  "sidebar": 220,
+  "right-panel": [
+   300,
+   320,
+   340
+  ],
+  "frame": [
+   1280,
+   800
+  ]
+ },
+ "target": {
+  "min-touch": 44
+ },
+ "rules": [
+  "Color is never the only signal (labels/shapes accompany it)",
+  "AI content always labelled",
+  "Analysis wording relative to the analyzed set"
+ ]
+}

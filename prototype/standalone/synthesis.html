@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 · Grounded synthesis — ResearchForge prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Source+Serif+4:wght@600&display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:#12202B;background:#F6F8F9}
+h1,h2,h3{font-family:'Source Serif 4',Georgia,serif;margin:0;font-weight:600}
+p{margin:0}
+.nav a{display:block;padding:10px 14px;border-radius:8px;color:#34495A;text-decoration:none;font-size:14px}
+.nav a.on{background:#E3F0F5;color:#0B4A63;font-weight:600}
+.card{background:#fff;border:1px solid #D7DEE3;border-radius:12px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid #C5CED5;color:#34495A;background:#fff}
+.ok{background:#E4F3EA;color:#14532D;border-color:#B7DEC5}
+.warn{background:#FDF0DC;color:#7A3E00;border-color:#EBCB98}
+.bad{background:#FBE4E4;color:#8A1C1C;border-color:#EBB5B5}
+.info{background:#E3F0F5;color:#0B4A63;border-color:#B5D5E2}
+.btn{font:600 14px Inter,sans-serif;padding:10px 16px;min-height:44px;border-radius:8px;border:1px solid #0B5C7A;background:#fff;color:#0B5C7A;cursor:pointer}
+.btn.p{background:#0B5C7A;color:#fff}
+.muted{color:#4A5B68;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;border-radius:4px;background:#E3E9ED;overflow:hidden}
+.bar i{display:block;height:8px;background:#0B5C7A}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;color:#4A5B68;font-weight:600;padding:8px 10px;border-bottom:1px solid #D7DEE3}
+td{padding:9px 10px;border-bottom:1px solid #EEF2F4}
+</style>
+</head>
+<body>
+<div style="display:flex;width:100%;min-height:800px;box-sizing:border-box">
+<aside style="width:220px;flex:none;background:#fff;border-right:1px solid #D7DEE3;padding:20px 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px">
+<div><h2 style="font-size:20px;color:#0B4A63">ResearchForge</h2><p class="muted" style="margin-top:4px">Thesis · Urban heat &amp; health</p></div>
+<nav class="nav" aria-label="Project"><a href="#">Search</a><a href="#">Library</a><a href="#">Screening</a><a href="#" class="on">Synthesis</a><a href="#">Map &amp; lineage</a><a href="#">Position &amp; gaps</a><a href="#">Journals</a><a href="#">Check</a></nav>
+<p class="muted" style="margin-top:auto">Sample data for prototype</p>
+</aside>
+<main style="flex:1;min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+<div class="row" style="justify-content:space-between"><h1 style="font-size:26px">Evidence synthesis</h1><div class="row"><span class="chip">Scope: library · included studies (38)</span></div></div>
+<div class="row"><span class="chip info" style="font-weight:600">Answer</span><span class="chip">Extraction table</span><span class="chip">Retrieved (24)</span></div>
+<div class="card" style="padding:14px 18px"><p class="muted">Question</p><p style="font-size:16px;margin-top:2px">How does extreme heat relate to cardiovascular mortality in older adults?</p></div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<section class="card" style="flex:1;min-width:0;padding:20px 22px">
+<div class="row"><span class="chip info">AI-generated</span><span class="muted">model: [configured] · 24 Oct 2026</span><span class="chip ok">7 of 8 claims verified</span><span class="chip warn">1 flagged</span></div>
+<div style="margin-top:16px;display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.6">
+<p>Studies in this set generally report higher cardiovascular mortality on days of extreme heat. <button class="btn" style="min-height:44px;padding:0 12px">[1]</button><button class="btn" style="min-height:44px;padding:0 12px">[2]</button> <span class="chip ok">Supported</span></p>
+<p>Older adults tend to show larger effects than younger groups. <button class="btn" style="min-height:44px;padding:0 12px">[2]</button><button class="btn" style="min-height:44px;padding:0 12px">[3]</button> <span class="chip ok">Supported</span></p>
+<p>Effects may differ by neighbourhood green space. <button class="btn p" style="min-height:44px;padding:0 12px">[4]</button> <span class="chip warn">Partially supported · check</span></p></div>
+<div class="row" style="margin-top:18px"><button class="btn p">Mark as reviewed</button><button class="btn">Copy with citations</button><span class="muted">Logged in your AI-use record</span></div>
+<p class="muted" style="margin-top:14px;border-top:1px solid #EEF2F4;padding-top:12px">Coverage notes: OpenAlex and PubMed searched · 38 works in scope · English and Indonesian · most studies observational. If evidence is thin, ResearchForge says so and lists what it searched.</p></section>
+<aside class="card" style="width:340px;flex:none;padding:18px" aria-label="Evidence">
+<h3 style="font-size:17px">Evidence for [4]</h3><p style="margin-top:8px;font-size:14px">Neighbourhood green space and heat-related hospital admissions</p>
+<div class="row" style="margin-top:8px"><span class="chip warn">Partially supported</span><span class="chip">Sample excerpt</span></div>
+<p style="margin-top:12px;font-size:14px;line-height:1.55;font-style:italic;color:#34495A">“…the association with green space was observed in one of the cities studied…”</p>
+<p class="muted" style="margin-top:12px"><b>Verifier note:</b> the excerpt supports an association in a single city, not a general difference. The claim is flagged, not removed.</p>
+<div class="row" style="margin-top:14px"><button class="btn">Open work</button><button class="btn">Remove claim</button></div></aside>
+</div></main>
+</div>
+</body>
+</html>

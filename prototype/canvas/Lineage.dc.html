@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>4 · Lineage & audit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Source+Serif+4:wght@600&display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:#12202B;background:#F6F8F9}
+h1,h2,h3{font-family:'Source Serif 4',Georgia,serif;margin:0;font-weight:600}
+p{margin:0}
+.nav a{display:block;padding:10px 14px;border-radius:8px;color:#34495A;text-decoration:none;font-size:14px}
+.nav a.on{background:#E3F0F5;color:#0B4A63;font-weight:600}
+.card{background:#fff;border:1px solid #D7DEE3;border-radius:12px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid #C5CED5;color:#34495A;background:#fff}
+.ok{background:#E4F3EA;color:#14532D;border-color:#B7DEC5}
+.warn{background:#FDF0DC;color:#7A3E00;border-color:#EBCB98}
+.bad{background:#FBE4E4;color:#8A1C1C;border-color:#EBB5B5}
+.info{background:#E3F0F5;color:#0B4A63;border-color:#B5D5E2}
+.btn{font:600 14px Inter,sans-serif;padding:10px 16px;min-height:44px;border-radius:8px;border:1px solid #0B5C7A;background:#fff;color:#0B5C7A;cursor:pointer}
+.btn.p{background:#0B5C7A;color:#fff}
+.muted{color:#4A5B68;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;border-radius:4px;background:#E3E9ED;overflow:hidden}
+.bar i{display:block;height:8px;background:#0B5C7A}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;color:#4A5B68;font-weight:600;padding:8px 10px;border-bottom:1px solid #D7DEE3}
+td{padding:9px 10px;border-bottom:1px solid #EEF2F4}
+</style>
+</helmet>
+<div style="display:flex;width:100%;min-height:800px;box-sizing:border-box">
+<aside style="width:220px;flex:none;background:#fff;border-right:1px solid #D7DEE3;padding:20px 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px">
+<div><h2 style="font-size:20px;color:#0B4A63">ResearchForge</h2><p class="muted" style="margin-top:4px">Thesis · Urban heat &amp; health</p></div>
+<nav class="nav" aria-label="Project"><a href="#">Search</a><a href="#">Library</a><a href="#">Screening</a><a href="#">Synthesis</a><a href="#" class="on">Map &amp; lineage</a><a href="#">Position &amp; gaps</a><a href="#">Journals</a><a href="#">Check</a></nav>
+<p class="muted" style="margin-top:auto">Sample data for prototype</p>
+</aside>
+<main style="flex:1;min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+<div class="row" style="justify-content:space-between"><h1 style="font-size:26px">Map &amp; lineage</h1><span class="chip">38 works · run #3 · seed 42 · reproducible</span></div>
+<div class="row"><span class="chip">Botanical tree</span><span class="chip info" style="font-weight:600">Lineage map</span><span class="chip">Audit table</span><span class="muted">Family: Heat–mortality time series</span></div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<section class="card" style="flex:1;min-width:0;padding:14px 16px"><svg viewBox="0 0 640 300" width="100%" role="img" aria-label="Lineage: Study A is the root; B and C descend from A; D from B; E from C; F needs review"><g stroke="#34495A" stroke-width="1.5" fill="none"><path d="M110 140 L170 140 L170 70 L200 70"/><path d="M170 140 L170 220 L200 220"/><path d="M324 70 L380 70"/><path d="M324 220 L380 220"/></g><rect x="0" y="117" width="124" height="46" rx="8" fill="#0B5C7A" stroke="#34495A"/><text x="62" y="137" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">Study A</text><text x="62" y="153" text-anchor="middle" font-size="11" fill="#fff">2009 · root</text><rect x="200" y="47" width="124" height="46" rx="8" fill="#E4F3EA" stroke="#34495A"/><text x="262" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="#14532D">Study B</text><text x="262" y="83" text-anchor="middle" font-size="11" fill="#14532D">2013 · High 0.78</text><rect x="200" y="197" width="124" height="46" rx="8" fill="#E4F3EA" stroke="#34495A"/><text x="262" y="217" text-anchor="middle" font-size="12" font-weight="600" fill="#14532D">Study C</text><text x="262" y="233" text-anchor="middle" font-size="11" fill="#14532D">2014 · High</text><rect x="380" y="47" width="124" height="46" rx="8" fill="#E4F3EA" stroke="#34495A"/><text x="442" y="67" text-anchor="middle" font-size="12" font-weight="600" fill="#14532D">Study D</text><text x="442" y="83" text-anchor="middle" font-size="11" fill="#14532D">2018 · High 0.82</text><rect x="380" y="197" width="124" height="46" rx="8" fill="#E3F0F5" stroke="#34495A"/><text x="442" y="217" text-anchor="middle" font-size="12" font-weight="600" fill="#0B4A63">Study E</text><text x="442" y="233" text-anchor="middle" font-size="11" fill="#0B4A63">2020 · Medium 0.60</text><rect x="516" y="117" width="124" height="46" rx="8" fill="#FDF0DC" stroke="#34495A" stroke-dasharray="5 3"/><text x="578" y="137" text-anchor="middle" font-size="12" font-weight="600" fill="#7A3E00">Study F</text><text x="578" y="153" text-anchor="middle" font-size="11" fill="#7A3E00">2023 · needs review</text></svg>
+<p class="muted">Older work on the left. Dashed = needs review (no parent assigned).</p></section>
+<aside class="card" style="width:320px;flex:none;padding:16px"><h3 style="font-size:17px">Study D · parent: Study B</h3>
+<div class="row" style="margin-top:8px"><span class="chip ok">High · 0.82</span><span class="chip">Chronology ok</span></div>
+<table style="margin-top:10px"><tr><td>Citation</td><td>1.00</td></tr><tr><td>Semantic</td><td>0.78</td></tr><tr><td>Keyword / concept</td><td>0.52</td></tr><tr><td>Chronology</td><td>0.90</td></tr></table>
+<div class="row" style="margin-top:12px"><button class="btn">Override parent</button><button class="btn">Open work</button></div></aside></div>
+<section class="card" style="padding:6px 8px;overflow-x:auto"><table><tr><th>Paper</th><th>Year</th><th>Parent</th><th>Evidence</th><th>Confidence</th><th>Status</th></tr>
+<tr><td>Study A</td><td>2009</td><td>—</td><td>Foundational root</td><td>High</td><td><span class="chip info">Root</span></td></tr>
+<tr><td>Study B</td><td>2013</td><td>Study A</td><td>Citation · semantic</td><td>High 0.78</td><td><span class="chip ok">Placed</span></td></tr>
+<tr><td>Study E</td><td>2020</td><td>Study C</td><td>Semantic · keyword</td><td>Medium 0.60</td><td><span class="chip ok">Placed</span></td></tr>
+<tr><td>Study F</td><td>2023</td><td>—</td><td>No abstract</td><td>Low</td><td><span class="chip warn">Needs review</span></td></tr></table></section></main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
