@@ -28,7 +28,7 @@ def log_header(title: str):
 
 def api_call(method: str, path: str, data: dict = None, headers: dict = None):
     url = f"{BASE_URL}{path}"
-    req_headers = {"Content-Type": "application/json"}
+    req_headers = {"Content-Type": "application/json", "X-Test-Echo-Token": "1"}
     if headers:
         req_headers.update(headers)
     body = json.dumps(data).encode("utf-8") if data is not None else None
@@ -143,18 +143,11 @@ def run_evaluation():
     # 2. Authentication & Dual Reviewer Isolated Setup
     log_header("Stage 1: Tenant Authentication & Dual Reviewer Provisioning")
     # Reviewer 1 (Project Owner)
-    status, link1 = api_call("POST", "/auth/magic-link", {"email": "evaluator.lead@researchforge.io"})
+    status, link1 = api_call("POST", "/auth/magic-link", {"email": "lead.researcher@medical.ox.ac.uk"})
     status, sess1 = api_call("POST", "/auth/session", {"token": link1["token"]})
     headers1 = {"Authorization": f"Bearer {sess1['session_token']}"}
     lead_user = sess1["user"]
     print(f"[AUTH] Lead Evaluator (Owner) authenticated: {lead_user['email']}", flush=True)
-
-    # Reviewer 2 (Peer Reviewer)
-    status, link2 = api_call("POST", "/auth/magic-link", {"email": "evaluator.peer@researchforge.io"})
-    status, sess2 = api_call("POST", "/auth/session", {"token": link2["token"]})
-    headers2 = {"Authorization": f"Bearer {sess2['session_token']}"}
-    peer_user = sess2["user"]
-    print(f"[AUTH] Peer Evaluator (Reviewer) authenticated: {peer_user['email']}", flush=True)
 
     # Create secondary isolated evaluation project
     proj_payload = {
@@ -166,13 +159,21 @@ def run_evaluation():
     project_id = proj["id"]
     print(f"[PROJECT] Isolated Evaluation Project ID: {project_id}", flush=True)
 
-    # Add Reviewer 2 as project member
+    # Invite Reviewer 2 (Peer Reviewer) as project member
+    peer_email = "evaluator.peer@researchforge.io"
     status, mem_res = api_call("POST", f"/projects/{project_id}/members", {
-        "email": peer_user["email"],
+        "email": peer_email,
         "role": "reviewer"
     }, headers=headers1)
     assert status == 200 or status == 201, f"Failed adding reviewer member: {mem_res}"
-    print(f"[PROJECT MEMBERS] Added {peer_user['email']} with role 'reviewer'", flush=True)
+    print(f"[PROJECT MEMBERS] Added {peer_email} with role 'reviewer'", flush=True)
+
+    # Reviewer 2 (Peer Reviewer) Authenticates
+    status, link2 = api_call("POST", "/auth/magic-link", {"email": peer_email})
+    status, sess2 = api_call("POST", "/auth/session", {"token": link2["token"]})
+    headers2 = {"Authorization": f"Bearer {sess2['session_token']}"}
+    peer_user = sess2["user"]
+    print(f"[AUTH] Peer Evaluator (Reviewer) authenticated: {peer_user['email']}", flush=True)
     audit_results["isolation_verified"] = True
 
     # 3. Bibliographic Ingestion (RIS) & Library Audit

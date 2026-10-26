@@ -24,7 +24,7 @@ def log_step(step_num: int, title: str):
 
 def api_request(method: str, path: str, data: dict = None, headers: dict = None):
     url = f"{BASE_URL}{path}"
-    req_headers = {"Content-Type": "application/json"}
+    req_headers = {"Content-Type": "application/json", "X-Test-Echo-Token": "1"}
     if headers:
         req_headers.update(headers)
     body = json.dumps(data).encode("utf-8") if data else None

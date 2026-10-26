@@ -18,7 +18,7 @@ import time
 import asyncio
 import httpx
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://127.0.0.1:8000"
 CONCURRENCY = 50
 
 async def probe_endpoint(client: httpx.AsyncClient, name: str, method: str, url: str, headers: dict = None, json_data: dict = None):
@@ -50,9 +50,12 @@ async def run_stress_test():
     print(f"  RESEARCHFORGE CONCURRENCY STRESS SUITE ({CONCURRENCY} PARALLEL REQUESTS)")
     print("="*80)
 
-    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+    async with httpx.AsyncClient(base_url=BASE_URL, headers={"X-Test-Echo-Token": "1"}) as client:
         # 1. Warm-up & Setup isolated tenant
-        link = await client.post("/auth/magic-link", json={"email": "stress.tester@perf.org"})
+        email = "lead.researcher@medical.ox.ac.uk"
+        link = await client.post("/auth/magic-link", json={"email": email})
+        if link.status_code != 200:
+            link = await client.post("/auth/magic-link", json={"email": "stress.tester@perf.org"})
         assert link.status_code == 200, "Setup magic link failed"
         sess = await client.post("/auth/session", json={"token": link.json()["token"]})
         assert sess.status_code == 200, "Setup session failed"

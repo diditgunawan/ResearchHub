@@ -67,7 +67,7 @@ async def request_magic_link(
     if settings.APP_ENV in ["local", "test"]:
         print(f"[AUTH DEV LOG] Single-use token for {payload.email}: {token}")
 
-    ret_token = token if (x_test_echo == "1" and os.environ.get("TESTING") == "1") else None
+    ret_token = token if (x_test_echo == "1" and settings.APP_ENV in ["local", "test"]) else None
     return MagicLinkResponse(
         message="Magic login link generated. Please check your inbox.",
         token=ret_token,
