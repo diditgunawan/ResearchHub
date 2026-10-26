@@ -3,16 +3,28 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import declarative_base
 from app.core.config import settings
 
-# Engine configuration
+# Engine configuration (Tier M PostgreSQL + PgBouncer pooling per Blueprint 16)
 connect_args = {}
+engine_kwargs = {
+    "echo": False,
+    "future": True,
+}
+
 if settings.DATABASE_URL.startswith("sqlite"):
     connect_args["check_same_thread"] = False
+else:
+    # High-throughput connection pooling for PostgreSQL / PgBouncer
+    engine_kwargs.update({
+        "pool_size": 20,
+        "max_overflow": 30,
+        "pool_pre_ping": True,
+        "pool_recycle": 1800,
+    })
 
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=False,
     connect_args=connect_args,
-    future=True,
+    **engine_kwargs,
 )
 
 async_session_maker = async_sessionmaker(
