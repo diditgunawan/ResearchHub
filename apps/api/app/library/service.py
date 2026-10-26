@@ -44,6 +44,11 @@ class LibraryService:
         )
         db.add(item)
         await db.flush()
+
+        # ADR-011: Embed-on-add discipline - compute or index chunks only when entering project scope
+        from app.synthesis.service import SynthesisService
+        await SynthesisService.get_or_create_chunks(db, work)
+
         return item
 
     @staticmethod

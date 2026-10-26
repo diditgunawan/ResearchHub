@@ -7,7 +7,7 @@ from app.core.config import settings
 
 
 class OpenAlexConnector(BaseSourceConnector):
-    """OpenAlex API connector conforming to DAT-001..DAT-010."""
+    """OpenAlex API connector conforming to DAT-001..DAT-020 & ADR-011."""
     name = "openalex"
     BASE_URL = "https://api.openalex.org"
 
@@ -77,6 +77,10 @@ class OpenAlexConnector(BaseSourceConnector):
             "search": query.q,
             "per-page": min(query.page_size, 100),
         }
+        # DAT-020: API key sent as query parameter for metered accounting
+        if settings.OPENALEX_API_KEY:
+            params["api_key"] = settings.OPENALEX_API_KEY
+
         if query.cursor:
             params["cursor"] = query.cursor
 
@@ -122,9 +126,12 @@ class OpenAlexConnector(BaseSourceConnector):
         if not clean_doi:
             return None
         try:
+            params = {}
+            if settings.OPENALEX_API_KEY:
+                params["api_key"] = settings.OPENALEX_API_KEY
             timeout = httpx.Timeout(8.0)
             async with (self.client or httpx.AsyncClient(timeout=timeout)) as client:
-                res = await client.get(f"{self.BASE_URL}/works/doi:{clean_doi}", headers=self._get_headers())
+                res = await client.get(f"{self.BASE_URL}/works/doi:{clean_doi}", params=params, headers=self._get_headers())
                 if res.status_code == 404:
                     return None
                 if res.status_code == 429:

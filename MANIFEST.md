@@ -104,7 +104,7 @@
 | `Launch_ResearchForge.bat` | Batch launcher for local full-stack server suite | 0.8 KB |
 | `launcher/ResearchForgeLauncher.cs` | Native C# launcher source code and build assets | 13.6 KB |
 | `logs/.gitkeep` | Runtime and interaction logs | 0.0 KB |
-| `logs/realtime_interactions.log` | Runtime and interaction logs | 259.8 KB |
+| `logs/realtime_interactions.log` | Runtime and interaction logs | 288.6 KB |
 | `Makefile` | Development and testing automation targets | 0.6 KB |
 | `ResearchForge.exe` | Windows native desktop executable launcher | 13.0 KB |
 
@@ -190,7 +190,7 @@
 | `apps/api/app/library/parsers/csv_parser.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 2.8 KB |
 | `apps/api/app/library/parsers/ris_parser.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 2.4 KB |
 | `apps/api/app/library/router.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 3.4 KB |
-| `apps/api/app/library/service.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 7.9 KB |
+| `apps/api/app/library/service.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 8.1 KB |
 | `apps/api/app/main.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 5.6 KB |
 | `apps/api/app/mapping/__init__.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 0.0 KB |
 | `apps/api/app/mapping/models.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 5.9 KB |
@@ -211,7 +211,7 @@
 | `apps/api/app/sources/base.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 2.5 KB |
 | `apps/api/app/sources/crossref.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 4.8 KB |
 | `apps/api/app/sources/federated.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 3.0 KB |
-| `apps/api/app/sources/openalex.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 5.4 KB |
+| `apps/api/app/sources/openalex.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 5.7 KB |
 | `apps/api/app/sources/schemas.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 1.8 KB |
 | `apps/api/app/synthesis/__init__.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 0.1 KB |
 | `apps/api/app/synthesis/models.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 3.4 KB |
@@ -237,7 +237,7 @@
 | `apps/api/tests/test_passkeys_and_access_mode.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 4.6 KB |
 | `apps/api/tests/test_projects_rbac.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 4.1 KB |
 | `apps/api/tests/test_screening_prisma.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 9.9 KB |
-| `apps/api/tests/test_sources_connectors.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 2.7 KB |
+| `apps/api/tests/test_sources_connectors.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 5.4 KB |
 | `apps/api/tests/test_synthesis_integrity.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 5.8 KB |
 | `apps/api/tests/test_worker_and_queue.py` | Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine | 1.4 KB |
 | `apps/web/Dockerfile` | Frontend SPA: React 19, TypeScript, Vite, Tailwind Warm Editorial design system | 0.4 KB |
