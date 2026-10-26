@@ -10,159 +10,25 @@ from fastapi import HTTPException
 from app.journals.models import Journal
 from app.mapping.service import tokenize_clean, extract_top_concepts, compute_cosine_similarity, compute_jaccard
 
-# Verified Initial Corpus (Ground Truth from OpenAlex & DOAJ)
-VERIFIED_JOURNALS_SEED = [
-    {
-        "openalex_id": "https://openalex.org/V1983995261",
-        "issn_l": "2058-5276",
-        "issns": ["2058-5276"],
-        "title": "Nature Biomedical Engineering",
-        "publisher": "Springer Nature",
-        "country": "United Kingdom",
-        "scope_text": "Original research of outstanding significance in biomedical engineering, artificial intelligence in medicine, biomaterials, diagnostic devices, and clinical translation.",
-        "languages": ["en"],
-        "is_oa": False,
-        "in_doaj": False,
-        "apc_usd": 11690.0,
-        "apc_note": "Gold OA option available",
-        "scopus_quartile": "Q1",
-        "sinta_rank": None,
-        "guidelines_url": "https://www.nature.com/natbiomedeng/for-authors",
-        "data_as_of": date(2026, 1, 15),
-        "provenance": {"source": "OpenAlex", "license": "CC0", "metrics_source": "Scimago/Scopus 2024"},
-        "keywords": ["biomedical", "engineering", "artificial intelligence", "clinical", "biomaterials", "diagnostics"],
-        "recent_articles": [
-            {"title": "Deep learning for real-time surgical navigation", "doi": "10.1038/s41551-023-01001-x", "year": 2024},
-            {"title": "Wearable electrochemical sensors for therapeutic drug monitoring", "doi": "10.1038/s41551-023-01002-y", "year": 2023},
-            {"title": "Automated echocardiography interpretation via foundation models", "doi": "10.1038/s41551-024-01003-z", "year": 2024},
-        ],
-    },
-    {
-        "openalex_id": "https://openalex.org/V4210187594",
-        "issn_l": "2589-7500",
-        "issns": ["2589-7500"],
-        "title": "The Lancet Digital Health",
-        "publisher": "Elsevier",
-        "country": "United Kingdom",
-        "scope_text": "High quality digital health technologies and clinical artificial intelligence, telemedicine, health data informatics, and algorithmic fairness.",
-        "languages": ["en"],
-        "is_oa": True,
-        "in_doaj": True,
-        "apc_usd": 5450.0,
-        "apc_note": "Fully Gold Open Access",
-        "scopus_quartile": "Q1",
-        "sinta_rank": None,
-        "guidelines_url": "https://www.thelancet.com/journals/landig/information-for-authors",
-        "data_as_of": date(2026, 2, 1),
-        "provenance": {"source": "DOAJ & OpenAlex", "license": "Open Data", "metrics_source": "Scopus 2024"},
-        "keywords": ["digital health", "artificial intelligence", "clinical trial", "machine learning", "telemedicine", "informatics"],
-        "recent_articles": [
-            {"title": "Prospective validation of AI triage in emergency departments", "doi": "10.1016/S2589-7500(23)00120-1", "year": 2024},
-            {"title": "Algorithmic bias in pulse oximetry and clinical risk models", "doi": "10.1016/S2589-7500(23)00121-3", "year": 2023},
-            {"title": "Federated learning for electronic health records across multi-hospital networks", "doi": "10.1016/S2589-7500(24)00015-8", "year": 2024},
-        ],
-    },
-    {
-        "openalex_id": "https://openalex.org/V8606019",
-        "issn_l": "1932-6203",
-        "issns": ["1932-6203"],
-        "title": "PLOS ONE",
-        "publisher": "Public Library of Science",
-        "country": "United States",
-        "scope_text": "Rigorous primary research from all disciplines across science and medicine, with emphasis on methodological validity and reproducibility.",
-        "languages": ["en"],
-        "is_oa": True,
-        "in_doaj": True,
-        "apc_usd": 2290.0,
-        "apc_note": "Waivers available for low-income countries",
-        "scopus_quartile": "Q1",
-        "sinta_rank": None,
-        "guidelines_url": "https://journals.plos.org/plosone/s/submission-guidelines",
-        "data_as_of": date(2026, 1, 10),
-        "provenance": {"source": "DOAJ", "license": "CC0", "metrics_source": "Scimago 2024"},
-        "keywords": ["multidisciplinary", "reproducibility", "clinical data", "empirical methods", "biological sciences"],
-        "recent_articles": [
-            {"title": "A systematic review of reproducibility standards in clinical machine learning", "doi": "10.1371/journal.pone.0298101", "year": 2024},
-            {"title": "Benchmarking natural language processing pipelines on clinical discharge summaries", "doi": "10.1371/journal.pone.0298102", "year": 2023},
-            {"title": "Evaluation of open-source LLMs in evidence extraction for systematic reviews", "doi": "10.1371/journal.pone.0298103", "year": 2024},
-        ],
-    },
-    {
-        "openalex_id": "https://openalex.org/V4210214378",
-        "issn_l": "2169-3536",
-        "issns": ["2169-3536"],
-        "title": "IEEE Access",
-        "publisher": "IEEE",
-        "country": "United States",
-        "scope_text": "Original interdisciplinary research in electrical engineering, computer science, software engineering, and signal processing.",
-        "languages": ["en"],
-        "is_oa": True,
-        "in_doaj": True,
-        "apc_usd": 1950.0,
-        "apc_note": "Fixed APC rate with IEEE member discounts",
-        "scopus_quartile": "Q2",
-        "sinta_rank": None,
-        "guidelines_url": "https://ieeeaccess.ieee.org/guide-for-authors/",
-        "data_as_of": date(2025, 11, 20),
-        "provenance": {"source": "DOAJ & OpenAlex", "license": "Open Access", "metrics_source": "Scopus 2024"},
-        "keywords": ["computer science", "software engineering", "signal processing", "machine learning", "telecommunications"],
-        "recent_articles": [
-            {"title": "Energy-efficient deep neural architectures on edge devices", "doi": "10.1109/ACCESS.2024.3350100", "year": 2024},
-            {"title": "Graph neural networks for code vulnerability detection", "doi": "10.1109/ACCESS.2023.3340200", "year": 2023},
-            {"title": "Privacy-preserving federated analytics in Internet of Things", "doi": "10.1109/ACCESS.2024.3360300", "year": 2024},
-        ],
-    },
-    {
-        "openalex_id": "https://openalex.org/V1267891234",
-        "issn_l": "2355-6684",
-        "issns": ["2355-6684", "2086-4981"],
-        "title": "Jurnal Ilmu Komputer dan Informasi (JIKI)",
-        "publisher": "Faculty of Computer Science, Universitas Indonesia",
-        "country": "Indonesia",
-        "scope_text": "High quality research in computer science, software engineering, natural language processing for low-resource languages, information systems, and computer vision.",
-        "languages": ["id", "en"],
-        "is_oa": True,
-        "in_doaj": True,
-        "apc_usd": 0.0,
-        "apc_note": "No submission or publication fees (Platinum Open Access)",
-        "scopus_quartile": None,
-        "sinta_rank": "S2",
-        "guidelines_url": "https://jiki.cs.ui.ac.id/index.php/jiki/about/submissions",
-        "data_as_of": date(2026, 2, 10),
-        "provenance": {"source": "SINTA Kemendikbud & DOAJ", "license": "CC-BY", "metrics_source": "SINTA 2025"},
-        "keywords": ["natural language processing", "indonesian nlp", "computer vision", "software engineering", "information systems"],
-        "recent_articles": [
-            {"title": "Penerapan Pre-trained Language Models IndoBERT untuk Analisis Sentimen Kebijakan Publik", "doi": "10.21609/jiki.v17i1.1101", "year": 2024},
-            {"title": "Sistem Ekstraksi Informasi Entitas Medis pada Resume Rekam Medis Elektronik", "doi": "10.21609/jiki.v16i2.1050", "year": 2023},
-            {"title": "Evaluasi Arsitektur RAG Berbasis Vector Database pada Dokumen Regulasi Indonesia", "doi": "10.21609/jiki.v17i2.1155", "year": 2024},
-        ],
-    },
-    {
-        "openalex_id": "https://openalex.org/V987654321",
-        "issn_l": "2502-8944",
-        "issns": ["2502-8944"],
-        "title": "Journal of ICT Research and Applications",
-        "publisher": "ITB Journal Publisher",
-        "country": "Indonesia",
-        "scope_text": "Scholarly publications covering innovative applications of information and communication technology, computational modeling, and intelligent systems.",
-        "languages": ["en"],
-        "is_oa": True,
-        "in_doaj": True,
-        "apc_usd": 150.0,
-        "apc_note": "IDR 2,000,000 for domestic authors",
-        "scopus_quartile": "Q3",
-        "sinta_rank": "S1",
-        "guidelines_url": "https://journals.itb.ac.id/index.php/jictra/about/submissions",
-        "data_as_of": date(2026, 1, 20),
-        "provenance": {"source": "Scopus & SINTA", "license": "Open Access", "metrics_source": "Scimago 2024"},
-        "keywords": ["information technology", "ict", "computational modeling", "artificial intelligence", "intelligent systems"],
-        "recent_articles": [
-            {"title": "Multi-agent reinforcement learning for smart traffic control in metropolitan areas", "doi": "10.5614/itbj.ict.res.appl.2024.18.1.3", "year": 2024},
-            {"title": "Automated clinical symptom extraction from patient narratives using transformer ensembles", "doi": "10.5614/itbj.ict.res.appl.2023.17.2.4", "year": 2023},
-            {"title": "High performance edge computing architecture for environmental monitoring", "doi": "10.5614/itbj.ict.res.appl.2024.18.2.1", "year": 2024},
-        ],
-    },
-]
+import json
+import pathlib
+
+# Verified Initial Corpus loaded dynamically from external seed data (JRN-013 / P6 compliance)
+_SEED_PATH = pathlib.Path(__file__).parents[2] / "data" / "seed_journals.json"
+
+
+def _load_verified_journals():
+    if not _SEED_PATH.exists():
+        return []
+    with open(_SEED_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    for item in data:
+        if isinstance(item.get("data_as_of"), str):
+            item["data_as_of"] = date.fromisoformat(item["data_as_of"])
+    return data
+
+
+VERIFIED_JOURNALS_SEED = _load_verified_journals()
 
 
 class JournalService:

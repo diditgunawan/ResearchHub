@@ -75,7 +75,11 @@ def verify_session_token(token: str) -> Optional[str]:
         if not hmac.compare_digest(sig, expected_sig):
             return None
             
-        user_id, _ = payload.rsplit(":", 1)
+        user_id, ts_str = payload.rsplit(":", 1)
+        created_at = int(ts_str)
+        # Max session duration: 7 days (604,800s). Reject ancient or future timestamps.
+        if (time.time() - created_at > 604800) or (created_at > time.time() + 60):
+            return None
         return user_id
     except Exception:
         return None

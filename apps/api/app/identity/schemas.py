@@ -9,7 +9,7 @@ class MagicLinkRequest(BaseModel):
 
 class MagicLinkResponse(BaseModel):
     message: str
-    token: Optional[str] = None  # Included in test/local environments
+    token: Optional[str] = None
 
 
 class SessionVerifyRequest(BaseModel):

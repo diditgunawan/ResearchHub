@@ -81,7 +81,7 @@ class SynthesisService:
 
         # Sort by relevance score desc
         scored_works.sort(key=lambda x: x[0], reverse=True)
-        top_works = [w for score, w in scored_works[:limit] if score > 0 or len(works) <= limit]
+        top_works = [w for score, w in scored_works[:limit] if score > 0]
 
         results = []
         for w in top_works:
@@ -135,22 +135,22 @@ class SynthesisService:
                 status="refused",
                 claims_json=[],
                 refusal_reason=refusal_reason,
-                model=settings.LLM_MODEL_SYNTHESIS,
-                tokens_used=50,
-                cost_usd=0.0001,
+                model="rule-engine",
+                tokens_used=0,
+                cost_usd=0.0,
             )
             db.add(run)
             await db.flush()
 
-            # Log AI usage
+            # Log AI usage (truthful provenance: rule-based execution consumes 0 LLM tokens)
             db.add(AiUsageLog(
                 project_id=project_id,
                 feature="synthesis_refusal",
                 stage=scope,
-                model=settings.LLM_MODEL_SYNTHESIS,
+                model="rule-engine",
                 purpose="Sufficiency check",
-                tokens_in=50,
-                tokens_out=20,
+                tokens_in=0,
+                tokens_out=0,
             ))
             await db.flush()
 
@@ -162,7 +162,7 @@ class SynthesisService:
                 refusal_reason=refusal_reason,
                 retrieved_works=[{"id": w.id, "title": w.title, "doi": w.doi, "year": w.year} for w, _ in retrieved],
                 verified_percentage=0.0,
-                model=settings.LLM_MODEL_SYNTHESIS,
+                model="rule-engine",
                 created_at=run.created_at,
             )
 
@@ -209,9 +209,9 @@ class SynthesisService:
             status=status,
             claims_json=[c.model_dump() for c in supported_claims],
             refusal_reason=refusal_msg,
-            model=settings.LLM_MODEL_SYNTHESIS,
-            tokens_used=len(supported_claims) * 120,
-            cost_usd=0.0005,
+            model="rule-engine",
+            tokens_used=0,
+            cost_usd=0.0,
         )
         db.add(run)
         await db.flush()
@@ -226,15 +226,15 @@ class SynthesisService:
                     verification_verdict=c.verdict,
                 ))
 
-        # Log AI usage
+        # Log AI usage (truthful provenance: deterministic rule engine)
         db.add(AiUsageLog(
             project_id=project_id,
             feature="grounded_synthesis",
             stage=scope,
-            model=settings.LLM_MODEL_SYNTHESIS,
+            model="rule-engine",
             purpose="Grounded RAG synthesis with chunk verification",
-            tokens_in=len(supported_claims) * 80,
-            tokens_out=len(supported_claims) * 40,
+            tokens_in=0,
+            tokens_out=0,
         ))
         await db.flush()
 

@@ -46,5 +46,5 @@ app.dependency_overrides[get_db] = override_get_db
 async def client():
     """Async test client with ASGI transport."""
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+    async with AsyncClient(transport=transport, base_url="http://test", headers={"X-Test-Echo-Token": "1"}) as ac:
         yield ac

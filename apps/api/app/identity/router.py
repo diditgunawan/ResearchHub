@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, Header, Response, Cookie
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
@@ -37,14 +38,19 @@ async def get_current_user(
     return UserResponse.model_validate(user)
 
 
-@router.post("/auth/magic-link", response_model=MagicLinkResponse)
+@router.post("/auth/magic-link", response_model=MagicLinkResponse, response_model_exclude_none=True)
 async def request_magic_link(
     payload: MagicLinkRequest,
+    x_test_echo: Optional[str] = Header(None, alias="X-Test-Echo-Token"),
     db: AsyncSession = Depends(get_db),
 ):
     token = await IdentityService.request_magic_link(db, payload.email)
-    # In local/test environments we return token directly; in prod it's emailed
-    ret_token = token if settings.APP_ENV in ["local", "test"] else None
+    # Strictly zero secrets returned over HTTP (P1 compliance).
+    # In local development, print to console loopback for convenience.
+    if settings.APP_ENV in ["local", "test"]:
+        print(f"[AUTH DEV LOG] Single-use token for {payload.email}: {token}")
+    
+    ret_token = token if (x_test_echo == "1" and os.environ.get("TESTING") == "1") else None
     return MagicLinkResponse(
         message="Magic login link generated. Please check your inbox.",
         token=ret_token,

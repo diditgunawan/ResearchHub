@@ -17,27 +17,12 @@ for req in (ROOT / "bundles").glob("*/references/requirements.md"):
         if lvl == "MUST" and (not scope or rid[:3] in scope): musts[rid] = False
 blob = ""
 for t in a.tests:
-    tp = pathlib.Path(t)
-    targets = [tp] if tp.is_file() else list(tp.rglob("*"))
-    for p in targets:
+    for p in pathlib.Path(t).rglob("*"):
         if p.is_file() and p.suffix in {".py", ".ts", ".tsx", ".js"}:
             blob += p.read_text(encoding="utf-8", errors="ignore") + "\n"
-
-# Expand ranges like ABC-001..ABC-010 or ABC-001..010
-for m in re.finditer(r'([A-Z]{3})-(\d{3})\.\.(?:([A-Z]{3})-)?(\d{3})', blob):
-    pfx = m.group(1)
-    start_num = int(m.group(2))
-    end_num = int(m.group(4))
-    for n in range(start_num, end_num + 1):
-        blob += f" {pfx}-{n:03d} "
-
 for rid in musts:
     s = rid.replace("-", "_")
-    if (
-        re.search(rf"test_{s}_", blob)
-        or re.search(rf"covers {rid}\b", blob)
-        or re.search(rf"\b{rid}\b", blob)
-    ):
+    if re.search(rf"test_{s}_", blob) or re.search(rf"covers {rid}\b", blob) or re.search(rf"\b{rid}\b.*(test|it|describe)\(", blob):
         musts[rid] = True
 missing = [r for r, ok in musts.items() if not ok]
 if a.report or missing:

@@ -37,6 +37,12 @@ async def lifespan(app: FastAPI):
         await engine.dispose()
 
 
+# Security guard: refuse default secrets in production (P8)
+if settings.APP_ENV == "production" and not os.environ.get("TESTING"):
+    sec = settings.SESSION_SECRET or ""
+    if not sec or "dev-" in sec.lower() or "testing" in sec.lower():
+        raise RuntimeError("Production security violation: APP_ENV is production but SESSION_SECRET uses an insecure default secret.")
+
 app = FastAPI(
     title="ResearchForge API",
     version="0.1.0",
