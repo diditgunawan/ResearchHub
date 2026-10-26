@@ -24,6 +24,7 @@ class ModelGateway:
     async def extract_atomic_claims(
         query: str,
         retrieved_works: List[Tuple[Any, List[Any]]],
+        model_override: Optional[str] = None,
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """
         Extracts verified atomic claims from retrieved works.
@@ -31,16 +32,24 @@ class ModelGateway:
             (candidate_claims, telemetry)
             telemetry: {"model": str, "tokens_in": int, "tokens_out": int, "cost_usd": float}
         """
+        # User explicitly requested deterministic zero-cost baseline
+        if model_override == "rule-engine":
+            return ModelGateway._extract_deterministic(retrieved_works)
+
         # Testing or unconfigured provider -> deterministic rule engine
         if os.environ.get("TESTING") == "1" or not settings.LLM_PROVIDER or not settings.LLM_API_KEY:
             return ModelGateway._extract_deterministic(retrieved_works)
 
         provider = settings.LLM_PROVIDER.lower().strip()
+        if model_override and "ollama" in model_override.lower():
+            provider = "ollama"
+        elif model_override and "gemini" in model_override.lower():
+            provider = "gemini"
+
         if provider == "gemini":
             try:
                 return await ModelGateway._extract_gemini(query, retrieved_works)
             except Exception as exc:
-                # Log error and safely fall back to deterministic rule engine
                 print(f"[MODEL GATEWAY WARNING] Gemini API call failed: {exc}. Falling back to deterministic engine.")
                 return ModelGateway._extract_deterministic(retrieved_works)
         elif provider == "ollama":

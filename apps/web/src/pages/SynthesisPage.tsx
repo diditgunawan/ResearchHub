@@ -17,6 +17,7 @@ interface SynthesisPageProps {
 export const SynthesisPage: React.FC<SynthesisPageProps> = ({ activeProject }) => {
   const [query, setQuery] = useState('clinical efficacy of artificial intelligence interventions');
   const [scope, setScope] = useState<'library' | 'screened_included'>('library');
+  const [selectedModel, setSelectedModel] = useState<string>('gemini-3.8-flash');
   const [loading, setLoading] = useState(false);
   const [synthesis, setSynthesis] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export const SynthesisPage: React.FC<SynthesisPageProps> = ({ activeProject }) =
     try {
       const res = await api.request<any>(`/projects/${activeProject.id}/synthesis`, {
         method: 'POST',
-        body: JSON.stringify({ query, scope, max_works: 10 }),
+        body: JSON.stringify({ query, scope, max_works: 10, model: selectedModel }),
       });
       setSynthesis(res);
       if (res.claims?.length > 0) {
@@ -174,6 +175,43 @@ export const SynthesisPage: React.FC<SynthesisPageProps> = ({ activeProject }) =
               <span>Only Screened & Included Works (PRISMA Assessed)</span>
             </label>
           </div>
+
+          <div className="flex flex-wrap items-center gap-6 text-xs text-[#34495A] pt-3 border-t border-[#EDF2F5]">
+            <span className="font-semibold text-[#4A5B68] uppercase tracking-wider">Inference Engine:</span>
+            <label className="flex items-center space-x-1.5 cursor-pointer">
+              <input
+                type="radio"
+                name="model"
+                value="gemini-3.8-flash"
+                checked={selectedModel === 'gemini-3.8-flash'}
+                onChange={() => setSelectedModel('gemini-3.8-flash')}
+                className="text-[#0B5C7A]"
+              />
+              <span className="font-medium text-[#12202B]">Gemini 3.8 Flash (Live Cloud AI)</span>
+            </label>
+            <label className="flex items-center space-x-1.5 cursor-pointer">
+              <input
+                type="radio"
+                name="model"
+                value="ollama"
+                checked={selectedModel === 'ollama'}
+                onChange={() => setSelectedModel('ollama')}
+                className="text-[#0B5C7A]"
+              />
+              <span>Local Ollama (Llama 3.2 Air-Gapped)</span>
+            </label>
+            <label className="flex items-center space-x-1.5 cursor-pointer">
+              <input
+                type="radio"
+                name="model"
+                value="rule-engine"
+                checked={selectedModel === 'rule-engine'}
+                onChange={() => setSelectedModel('rule-engine')}
+                className="text-[#0B5C7A]"
+              />
+              <span>Rule Engine (Zero-Cost Baseline)</span>
+            </label>
+          </div>
         </form>
       </div>
 
@@ -198,14 +236,21 @@ export const SynthesisPage: React.FC<SynthesisPageProps> = ({ activeProject }) =
               </p>
             </div>
           ) : (
-            <div className="p-4 rounded-xl bg-[#E4F3EA] border border-[#B7DEC5] text-[#14532D] flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-[#E4F3EA] border border-[#B7DEC5] text-[#14532D] flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-5 h-5 text-[#14532D]" />
                 <span className="text-xs font-semibold">
                   Synthesis Status: <strong>{synthesis.status.toUpperCase()}</strong> · Verified Grounding: <strong>{synthesis.verified_percentage}%</strong>
                 </span>
               </div>
-              <span className="text-xs font-mono text-[#0B5C7A]">Model: {synthesis.model}</span>
+              <div className="flex items-center space-x-3 text-xs font-mono">
+                <span className="px-2.5 py-1 bg-[#D2ECDD] text-[#0F4723] rounded-md font-semibold">Model: {synthesis.model}</span>
+                {synthesis.tokens_used > 0 && (
+                  <span className="px-2.5 py-1 bg-[#F6F8F9] text-[#34495A] border border-[#D7DEE3] rounded-md">
+                    Tokens: {synthesis.tokens_used} (${synthesis.cost_usd ? synthesis.cost_usd.toFixed(4) : '0.0000'})
+                  </span>
+                )}
+              </div>
             </div>
           )}
 

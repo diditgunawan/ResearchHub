@@ -117,6 +117,7 @@ class SynthesisService:
         query: str,
         scope: str = "library",
         max_works: int = 10,
+        model_override: Optional[str] = None,
     ) -> SynthesisResponse:
         """SYN-005, SYN-008, SYN-009, SYN-010: Grounded synthesis with sufficiency gate and refusal policy."""
         retrieved = await SynthesisService.retrieve_project_works(
@@ -164,11 +165,13 @@ class SynthesisService:
                 retrieved_works=[{"id": w.id, "title": w.title, "doi": w.doi, "year": w.year} for w, _ in retrieved],
                 verified_percentage=0.0,
                 model="rule-engine",
+                tokens_used=0,
+                cost_usd=0.0,
                 created_at=run.created_at,
             )
 
         # Generate atomic claims directly grounded in retrieved chunk text via ModelGateway
-        raw_claims, telemetry = await ModelGateway.extract_atomic_claims(query, retrieved)
+        raw_claims, telemetry = await ModelGateway.extract_atomic_claims(query, retrieved, model_override=model_override)
         candidate_claims: List[AtomicClaim] = [
             AtomicClaim(
                 claim_index=c["claim_index"],
@@ -237,5 +240,7 @@ class SynthesisService:
             retrieved_works=[{"id": w.id, "title": w.title, "doi": w.doi, "year": w.year} for w, _ in retrieved],
             verified_percentage=round((len(supported_claims) / len(candidate_claims)) * 100, 1) if candidate_claims else 0.0,
             model=telemetry["model"],
+            tokens_used=run.tokens_used,
+            cost_usd=run.cost_usd,
             created_at=run.created_at,
         )

@@ -29,6 +29,7 @@ async def run_synthesis(
         payload.query,
         scope=payload.scope,
         max_works=payload.max_works,
+        model_override=payload.model,
     )
 
 
@@ -58,6 +59,8 @@ async def get_synthesis_run(
         retrieved_works=[],
         verified_percentage=100.0 if run.status == "completed" else 0.0,
         model=run.model,
+        tokens_used=run.tokens_used,
+        cost_usd=run.cost_usd,
         created_at=run.created_at,
     )
 

@@ -7,6 +7,7 @@ class SynthesisRequest(BaseModel):
     query: str = Field(..., min_length=5, description="Scholarly research question to synthesize")
     scope: str = Field("library", pattern="^(library|screened_included)$")
     max_works: int = Field(10, ge=1, le=50)
+    model: Optional[str] = Field(None, description="Inference engine: gemini-3.8-flash, ollama, or rule-engine")
 
 
 class AtomicClaim(BaseModel):
@@ -30,6 +31,8 @@ class SynthesisResponse(BaseModel):
     retrieved_works: List[Dict[str, Any]]
     verified_percentage: float
     model: str
+    tokens_used: Optional[int] = 0
+    cost_usd: Optional[float] = 0.0
     created_at: datetime
 
 
