@@ -9,6 +9,7 @@ from app.screening.models import ScreeningDecision, ScreeningResolution
 from app.works.models import Work
 from app.integrity.models import AiUsageLog
 from app.synthesis.schemas import AtomicClaim, SynthesisResponse
+from app.synthesis.gateway import ModelGateway
 from app.core.config import settings
 
 
@@ -166,31 +167,20 @@ class SynthesisService:
                 created_at=run.created_at,
             )
 
-        # Generate atomic claims directly grounded in retrieved chunk text
-        candidate_claims: List[AtomicClaim] = []
-        for idx, (work, chunks) in enumerate(retrieved):
-            primary_chunk = chunks[0] if chunks else None
-            if not primary_chunk:
-                continue
-
-            # Extract primary finding sentence from chunk
-            sentences = [s.strip() for s in re.split(r"[.!?]", primary_chunk.text) if len(s.strip()) > 10]
-            core_finding = sentences[0] if sentences else primary_chunk.text
-            claim_sentence = f"According to {work.title} ({work.year or 'n.d.'}), {core_finding}."
-
-            verdict, excerpt = SynthesisService._verify_claim(core_finding, primary_chunk.text)
-
-            candidate_claims.append(
-                AtomicClaim(
-                    claim_index=idx,
-                    claim_text=claim_sentence,
-                    citation_chunk_ids=[primary_chunk.id],
-                    verdict=verdict,
-                    evidence_excerpt=excerpt,
-                    work_title=work.title,
-                    doi=work.doi,
-                )
+        # Generate atomic claims directly grounded in retrieved chunk text via ModelGateway
+        raw_claims, telemetry = await ModelGateway.extract_atomic_claims(query, retrieved)
+        candidate_claims: List[AtomicClaim] = [
+            AtomicClaim(
+                claim_index=c["claim_index"],
+                claim_text=c["claim_text"],
+                citation_chunk_ids=c["citation_chunk_ids"],
+                verdict=c["verdict"],
+                evidence_excerpt=c.get("evidence_excerpt"),
+                work_title=c.get("work_title"),
+                doi=c.get("doi"),
             )
+            for c in raw_claims
+        ]
 
         # SYN-010: Apply verification policy
         supported_claims = [c for c in candidate_claims if c.verdict in ["supported", "partially_supported"]]
@@ -209,9 +199,9 @@ class SynthesisService:
             status=status,
             claims_json=[c.model_dump() for c in supported_claims],
             refusal_reason=refusal_msg,
-            model="rule-engine",
-            tokens_used=0,
-            cost_usd=0.0,
+            model=telemetry["model"],
+            tokens_used=telemetry["tokens_in"] + telemetry["tokens_out"],
+            cost_usd=telemetry["cost_usd"],
         )
         db.add(run)
         await db.flush()
@@ -226,15 +216,15 @@ class SynthesisService:
                     verification_verdict=c.verdict,
                 ))
 
-        # Log AI usage (truthful provenance: deterministic rule engine)
+        # Log AI usage (truthful provenance: actual model telemetry)
         db.add(AiUsageLog(
             project_id=project_id,
             feature="grounded_synthesis",
             stage=scope,
-            model="rule-engine",
+            model=telemetry["model"],
             purpose="Grounded RAG synthesis with chunk verification",
-            tokens_in=0,
-            tokens_out=0,
+            tokens_in=telemetry["tokens_in"],
+            tokens_out=telemetry["tokens_out"],
         ))
         await db.flush()
 
@@ -246,6 +236,6 @@ class SynthesisService:
             refusal_reason=refusal_msg,
             retrieved_works=[{"id": w.id, "title": w.title, "doi": w.doi, "year": w.year} for w, _ in retrieved],
             verified_percentage=round((len(supported_claims) / len(candidate_claims)) * 100, 1) if candidate_claims else 0.0,
-            model=settings.LLM_MODEL_SYNTHESIS,
+            model=telemetry["model"],
             created_at=run.created_at,
         )

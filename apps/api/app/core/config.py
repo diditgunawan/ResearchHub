@@ -34,8 +34,10 @@ class Settings(BaseSettings):
     # LLM Settings
     LLM_PROVIDER: Optional[str] = None
     LLM_API_KEY: Optional[str] = None
-    LLM_MODEL_SYNTHESIS: str = "gemini-1.5-flash"
-    LLM_MODEL_VERIFY: str = "gemini-1.5-pro"
+    LLM_MODEL_SYNTHESIS: str = "gemini-3.8-flash"
+    LLM_MODEL_VERIFY: str = "gemini-3.1-pro-preview"
+    LLM_EMBEDDING_MODEL: str = "gemini-embedding-001"
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
     
     # Quota & Budgets
     QUOTA_WEEKLY_CREDITS_FREE: int = 50
