@@ -18,6 +18,12 @@ class Settings(BaseSettings):
         description="Session encryption secret"
     )
     
+    # Access Model & Authentication (ADR-009 & Blueprint 17)
+    ACCESS_MODE: str = Field(default="single_owner", description="single_owner or multi_user")
+    REGISTRATION_POLICY: str = Field(default="closed", description="closed, invite_only, or open")
+    WEBAUTHN_RP_ID: str = Field(default="localhost", description="Relying party ID for WebAuthn")
+    WEBAUTHN_RP_NAME: str = Field(default="ResearchHub", description="Relying party name")
+
     # Open Scholarly API Keys & Mailto
     OPENALEX_MAILTO: Optional[str] = "researchforge@example.org"
     OPENALEX_API_KEY: Optional[str] = None

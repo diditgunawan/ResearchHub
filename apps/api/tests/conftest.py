@@ -19,12 +19,18 @@ test_engine = create_async_engine(
 TestSessionLocal = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
 
 
+from app.core.config import settings
+
+
 @pytest.fixture(autouse=True)
 async def setup_database():
     """Create all tables before each test and drop them after."""
+    orig_mode = settings.ACCESS_MODE
+    settings.ACCESS_MODE = "multi_user"
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    settings.ACCESS_MODE = orig_mode
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
