@@ -7,7 +7,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState('researcher.phd@university.edu');
+  const [email, setEmail] = useState('lead.researcher@medical.ox.ac.uk');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [devToken, setDevToken] = useState<string | null>(null);

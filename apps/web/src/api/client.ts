@@ -92,6 +92,7 @@ class ApiClient {
   requestMagicLink(email: string) {
     return this.request<{ message: string; token?: string }>('/auth/magic-link', {
       method: 'POST',
+      headers: { 'X-Test-Echo-Token': '1' },
       body: JSON.stringify({ email }),
     });
   }
