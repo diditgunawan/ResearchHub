@@ -20,3 +20,4 @@
 | MAP-017 | MUST | The gap view emits typed signals (unresolved condition, future-work, lineage gap, data-quality), each with source work, ≤ 300-character excerpt from open-access or user-owned text, and extractor version; a persistent banner states a gap is not global novelty. |
 | MAP-018 | MUST | The module never generates related-work prose; optional AI may only rewrite evidence summaries, labelled and logged per ETH-001/ETH-002. |
 | MAP-019 | SHOULD | Botanical tree, lineage map, and table views share one analysis without recomputation; lineage diagram exports to SVG/PNG using our own visual language. |
+| MAP-020 | SHOULD | Evidence-map and network exports: CSV and RIS suitable for evidence-map tools, plus node and edge tables for network visualisation tools. |

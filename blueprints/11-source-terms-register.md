@@ -29,3 +29,19 @@ Sites that disallow automated access or forbid scraping in terms (including comm
 | PaperTree | Idea reference only | No code/data/visual reuse; no automated access without permission | n/a | Not open source as far as seen | | |
 | PDF extraction (e.g., GROBID or equivalent) | Metadata/reference extraction for uploads | Licence, deployment model, accuracy on ID/EN papers | | | | |
 | Keyphrase/clustering libraries | MAP features | Licences, maintenance, pinned versions (ENG-020) | | | | |
+
+## Added v0.6 (evidence-synthesis ecosystem)
+| Source / tool | Use | What to verify | Auth / limits (verify) | Licence/terms (verify) | Verified on | Link |
+|---|---|---|---|---|---|---|
+| Awesome Evidence Synthesis Tools (list) | Reference index for tools, categories | Attribution wording | n/a | CC BY 4.0 (LICENSE file read 27 Oct 2026) | 2026-10-27 | github.com/evidencesynthesis-tools/awesome-evidence-synthesis |
+| SYNERGY dataset | Benchmarks B1 to B3, B6 | Dataset licence, version, OpenAlex id fields, download method | `synergy-dataset` package | Check DataverseNL record (DOI 10.34894/HE6NAQ) | | github.com/asreview/synergy-dataset |
+| SciLitBench | Benchmark B4 | Licence, frozen splits, access | | Check paper and repository | | arxiv.org/abs/2609.05505 |
+| ASReview LAB | Baseline for B2 | Licence, version, model names, install | | Verify before any reuse (ADR-008) | | asreview.ai |
+| ASySD, synthesisr | Baselines for B1 | Licence, R version, input format | | Verify | | camaradesuk.github.io/ASySD, martinwestgate.com/synthesisr |
+| PRISMA 2020 flow generator | Reference for B5 | Input CSV schema, licence | | Verify | | estech.shinyapps.io/PRISMA_flowdiagram_latest |
+| GROBID | PDF extraction baseline | Licence, deployment, accuracy | | Verify | | grobid.github.io |
+| DenseReviewer, LatteReview, PROMETHEUS, LLAssist, prismAId, ReAct-ExtrAct | Design references for screening and extraction | Licence, maturity | | Verify before reuse | | see list |
+| CitationChaser, Paperfetcher, litsearchr, SRA Polyglot | Reference for snowballing and search strategy | Licence, API dependencies (Lens, Crossref, COCI) | | Verify | | see list |
+| RobotReviewer, robvis, Critiplot | Risk-of-bias references and export targets | Licence, instruments covered | | Verify | | see list |
+| MedSci Skills | Structural reference for skill suites | Licence (MIT stated in list), scope | | Verify | | github.com/Aperivue/medsci-skills |
+

@@ -1,0 +1,5 @@
+# Benchmark harness extras (install in an isolated environment; pin after the first successful run)
+synergy-dataset
+scikit-learn
+numpy
+pytest

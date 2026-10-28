@@ -22,3 +22,6 @@
 
 ## Cohen's kappa
 For two reviewers over N items with categorical verdicts: po = observed agreement; pe = Σ_k (p1k · p2k); κ = (po − pe) / (1 − pe). Compute only on items both reviewed in that stage. 'maybe' is its own category unless configured otherwise.
+| SCR-019 | SHOULD | Prioritised screening ranks unscreened records with an open, logged model; it shows stopping diagnostics (for example consecutive irrelevant records, estimated recall) as advice only; it never auto-excludes; each ranking batch stores model name, version, seed, and training-set size; blind mode is unaffected. |
+| SCR-020 | SHOULD | Protocol export with registry-style fields (question, framework, eligibility, databases, dates, planned methods, risk-of-bias instrument) usable for PROSPERO or OSF registration; versioned, with a deviations log. |
+| SCR-021 | SHOULD | PRISMA outputs include a CSV compatible with the official PRISMA 2020 flow-diagram generator input and a 27-item checklist skeleton with locations; every figure equals the computed flow (SCR-011). |

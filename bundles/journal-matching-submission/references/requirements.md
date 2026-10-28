@@ -13,3 +13,4 @@
 | JRN-010 | MUST | Submission checklist items cite source URL/line; unverifiable items are marked "verify manually". |
 | JRN-011 | MUST | Data older than 12 months is visibly marked stale; refresh jobs scheduled. |
 | JRN-012 | MUST | Offline eval set (≥ 60 labelled abstracts) tracks top-5 hit rate; regression below threshold blocks release. |
+| JRN-013 | MUST | No scholarly records (journals, articles, DOIs, metrics) are hard-coded in production code; seeds exist only in test fixtures or behind a visible demo flag; every journal row carries `source_record_id`, `fetched_at`, and provenance; articles link to real `works`. |

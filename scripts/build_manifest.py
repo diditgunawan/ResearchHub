@@ -3,32 +3,27 @@
 so the inventory never drifts. Usage: python scripts/build_manifest.py [--check]"""
 import pathlib, sys, fnmatch
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SKIP_DIRS = {"dist", "__pycache__", ".git", "node_modules", ".venv", ".pytest_cache", "build"}
+SKIP_DIRS = {"dist", "__pycache__", ".git", "node_modules"}
 RULES = [  # (glob, area, description) — first match wins
- (".env.example","Scaffold","Root environment configuration template"),
- (".gitignore","Scaffold","Git ignore rules"),
- ("audit from claude/*","Handoff","Mastermind audit reports and strategic reviews from Claude"),
- ("scripts/integrity.sha256","Script","Cryptographic pin for requirement coverage gate"),
- ("docker-compose.yml","Scaffold","Multi-container orchestration for backend and frontend services"),
- ("Makefile","Scaffold","Development and testing automation targets"),
- ("Launch_ResearchForge.bat","Scaffold","Batch launcher for local full-stack server suite"),
- ("ResearchForge.exe","Scaffold","Windows native desktop executable launcher"),
- ("ResearchForge.ico","Scaffold","Application window and desktop icon asset"),
- (".agents/*","Governance","Vibe coding governance, PRD, architecture, and ledger state"),
  ("AGENTS.md","Entry","Master router + global rules G1–G13; copy to repo root"),
  ("README.md","Entry","Package overview and quick start"),
  ("CHANGELOG.md","Entry","Version history of this package"),
  ("docs/PROJECT_STATE.md","Handoff","Living state: done, next, assumptions, open questions, known issues"),
  ("docs/DEVELOPMENT_GUIDE.md","Handoff","How continuing agents work: read order, loop, M0 tasks, coordination"),
  ("docs/AGENT_PROMPTS.md","Handoff","Paste-ready prompts per milestone and for reviewer/contract/design agents"),
- ("docs/subprocessors.md","Handoff","Sub-processor register for data processing agreements"),
- ("docs/PRIVACY.md","Handoff","Privacy notice and data protection policy (GDPR & UU PDP)"),
- ("docs/ETHICS.md","Handoff","Academic integrity, AI ethics, and disclosure policy"),
- ("docs/runbooks/*","Handoff","Index and operational runbooks for platform workflows"),
+ ("docs/BENCHMARK_RUNBOOK.md","Handoff","Exact steps to produce the first real SYNERGY baseline and record it"),
+ ("docs/subprocessors.md","Handoff","Stub: sub-processor register (fill before launch)"),
+ ("docs/runbooks/README.md","Handoff","Index/stubs for six required runbooks"),
  ("blueprints/00-*","Blueprint","Vision, scope, personas, metrics, risks"),
  ("blueprints/01-*","Blueprint","PRD: epics, stories, NFRs, release criteria"),
  ("blueprints/02-*","Blueprint","Architecture, modules, flows, tech choices, mapping module"),
  ("blueprints/03-*","Blueprint","PostgreSQL schema (parses; not yet run on live DB)"),
+ ("blueprints/03b-*","Blueprint","Schema delta v0.4: access model, truthful AI accounting, scale, journal integrity, RLS template"),
+ ("blueprints/16-*","Blueprint","Scale architecture (Tier M): capacity, topology, servers, network, security, backend/frontend design"),
+ ("blueprints/17-*","Blueprint","Access model: single-owner mode with all multi-user flows kept"),
+ ("blueprints/18-*","Blueprint","Roadmap v2: phases, gates, KPIs, risks, agent lanes"),
+ ("blueprints/20-*","Blueprint","Evidence-synthesis ecosystem: tool map, supporting protocols, gaps (adapted from CC BY 4.0 index)"),
+ ("blueprints/21-*","Blueprint","Benchmarking plan: datasets, suites, metrics, baselines, thresholds policy"),
  ("blueprints/04-*","Blueprint","OpenAPI 3.1 contract (validated; many responses still stubs)"),
  ("blueprints/05-*","Blueprint","RAG/AI spec, quality targets, LLM use in mapping"),
  ("blueprints/06-*","Blueprint","Security, privacy, threat model, upload controls"),
@@ -42,19 +37,16 @@ RULES = [  # (glob, area, description) — first match wins
  ("blueprints/14-*","Blueprint","Traceability matrix of all requirements (generated)"),
  ("blueprints/15-*","Blueprint","Reference analysis: ideas taken/not taken from five products"),
  ("blueprints/adr/*","Blueprint","Architecture decision record"),
- ("blueprints/scaffold/*","Scaffold","Dev and container scaffold: docker-compose, env, Makefile"),
+ ("blueprints/scaffold/docker-compose.yml","Scaffold","Dev services: Postgres+pgvector, Redis, MinIO, Mailpit, api/worker/web"),
+ ("blueprints/scaffold/.env.example","Scaffold","Environment variable template (no secrets)"),
+ ("blueprints/scaffold/Makefile","Scaffold","dev/test/lint/type/migrate/evals/audit targets"),
  ("templates/*","Template","Reusable template (ADR, state, handoff, PR checklist)"),
  ("scripts/validate_bundles.py","Script","Lint package: frontmatter, IDs, cross-refs, OpenAPI, SQL"),
  ("scripts/check_requirement_coverage.py","Script","QAS-004: MUST IDs must have tests"),
+ ("scripts/truth_audit.py","Script","QAS-026: behavioural probes (auth, provenance, gate, hard-coded data, boot guard)"),
+ ("scripts/integrity.sha256","Script","Pinned hash of the strict coverage gate script"),
+ ("scripts/benchmark/*","Script","Benchmark harness: metrics, screening runner, hand-verified tests"),
  ("scripts/build_manifest.py","Script","Regenerates this manifest"),
- ("scripts/e2e_live_simulation.py","Script","Automated live end-to-end system simulation across all core workflows"),
- ("scripts/stress_concurrency_test.py","Script","Concurrency and high-throughput stress verification suite"),
- ("scripts/test_ieee_dataset_eval.py","Script","Real IEEE dataset evaluation benchmark with non-primary tenant isolation"),
- ("logs/*","Scaffold","Runtime and interaction logs"),
- ("apps/api/*","Application","Backend service: FastAPI, SQLAlchemy, SQLite/Postgres, RAG, and screening engine"),
- ("apps/web/*","Application","Frontend SPA: React 19, TypeScript, Vite, Tailwind Warm Editorial design system"),
- ("packages/*","Contracts","Shared packages and API contracts"),
- ("launcher/*","Scaffold","Native C# launcher source code and build assets"),
  ("prototype/README.md","Prototype","Prototype overview and editing notes"),
  ("prototype/screen-specs.md","Prototype","Per-screen implementation brief"),
  ("prototype/design-tokens.*","Prototype","Design tokens (JSON and CSS variables)"),
@@ -78,8 +70,8 @@ for p in sorted(ROOT.rglob("*")):
     d = describe(rel)
     if d is None: print("ERROR: no description rule for", rel); sys.exit(1)
     files.append((rel, d[0], d[1], p.stat().st_size))
-out = ["# MANIFEST — ResearchForge handoff package v0.3", "", f"{len(files)} files. Generated by `scripts/build_manifest.py`; do not edit by hand.", ""]
-for area in ["Entry","Handoff","Blueprint","Skill","Scaffold","Template","Script","Prototype","Application","Contracts"]:
+out = ["# MANIFEST — ResearchForge handoff package v0.7", "", f"{len(files)} files. Generated by `scripts/build_manifest.py`; do not edit by hand.", ""]
+for area in ["Entry","Handoff","Blueprint","Skill","Scaffold","Template","Script","Prototype"]:
     rows = [f for f in files if f[1] == area]
     out += [f"## {area} ({len(rows)})", "", "| Path | Purpose | Size |", "|---|---|---|"]
     out += [f"| `{r[0]}` | {r[2]} | {r[3]/1024:.1f} KB |" for r in rows] + [""]

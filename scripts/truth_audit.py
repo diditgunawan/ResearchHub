@@ -51,6 +51,19 @@ async def main():
         leaked = [k for k in body if re.search(r"token|link|url", k, re.I) and body[k]]
         rec("P1", "login token not returned by API", not leaked, f"response keys with secrets: {leaked or 'none'}")
         legacy_tok = body.get("token")
+        # P9 no echo/backdoor header returns the token
+        r9 = await c.post("/auth/magic-link", json={"email": "victim@example.org"}, headers={"X-Test-Echo-Token": "1", "X-Debug": "1"})
+        b9 = r9.json() if r9.headers.get("content-type", "").startswith("application/json") else {}
+        rec("P9", "no header backdoor returns login token", not b9.get("token"), "token returned when X-Test-Echo-Token: 1 is sent" if b9.get("token") else "none")
+        # P10 anonymous first caller must not become admin
+        try:
+            from sqlalchemy import text
+            async with SL() as s_:
+                rows = (await s_.execute(text("select email, is_system_admin from users order by created_at"))).all()
+            hijack = [r_[0] for r_ in rows if r_[1]]
+            rec("P10", "anonymous first caller does not become system admin", not hijack, f"admins created by anonymous HTTP: {hijack or 'none'}")
+        except Exception as e:
+            rec("P10", "anonymous first caller does not become system admin", False, f"probe error {type(e).__name__}", skip=True)
 
         async def link_token(email):
             if T and hasattr(T, "issue_link"):
@@ -92,6 +105,15 @@ async def main():
             q = await c.post(f"/projects/{pid}/synthesis", json={"query": "quantum chromodynamics lattice gauge", "scope": "library"}, headers=h)
             j = q.json() if q.status_code == 200 else {}
             rec("P4", "irrelevant query is refused", j.get("status") == "refused", f"status={j.get('status')} claims={len(j.get('claims') or [])} verified%={j.get('verified_percentage')}")
+            q2 = await c.post(f"/projects/{pid}/synthesis", json={"query": "quantum lattice study", "scope": "library"}, headers=h)
+            j2 = q2.json() if q2.status_code == 200 else {}
+            rec("P11", "one shared generic word does not pass relevance floor", j2.get("status") == "refused", f"status={j2.get('status')} claims={len(j2.get('claims') or [])}")
+            try:
+                await c.post("/auth/passkey/register-verify", json={"credential_id": "audit-cred-1", "public_key": "x", "label": "audit"}, headers=h)
+                pk = await c.post("/auth/passkey/login-verify", json={"credential_id": "audit-cred-1"})
+                rec("P12", "passkey login requires a verified signature", pk.status_code in (400, 401, 403, 422), f"login with credential id only -> {pk.status_code}")
+            except Exception as e:
+                rec("P12", "passkey login requires a verified signature", False, f"probe error {type(e).__name__}", skip=True)
             # P5 provenance honesty
             d = (await c.get(f"/projects/{pid}/ai-disclosure", headers=h)).json()
             code = "".join(p.read_text(errors="ignore") for p in (API / "app").rglob("*.py")) + (API / "pyproject.toml").read_text(errors="ignore")
@@ -108,6 +130,14 @@ async def main():
     for p in (API / "app").rglob("*.py"):
         n += len(re.findall(r'["\']doi["\']\s*:\s*["\']10\.\d{4,9}/', p.read_text(errors="ignore")))
     rec("P6", "no hard-coded DOIs in production code", n == 0, f"DOI literals found: {n}")
+    jn = 0
+    for p in (API / "data").rglob("*.json") if (API / "data").exists() else []:
+        jn += len(re.findall(r'10\.\d{4,9}/[^"\s]+', p.read_text(errors="ignore")))
+    allcode = "".join(p.read_text(errors="ignore") for p in (API / "app").rglob("*.py"))
+    demo = bool(re.search(r"DEMO_(MODE|DATA)|demo_flag|DEMO_SEED", allcode))
+    rec("P13", "no scholarly records shipped as production data (unless behind demo flag)", jn == 0 or demo, f"DOI strings in data files: {jn}; demo flag present: {demo}")
+    sim = [p.name for p in (API / "app").rglob("*.py") if re.search(r"asyncio\.sleep\([^)]*\)\s*#.*(simulat|mock|fake)", p.read_text(errors="ignore"), re.I)]
+    rec("P14", "background handlers do real work (no simulated sleeps)", not sim, f"simulated handlers in: {sim or 'none'}")
 
     # P7 coverage gate integrity
     gate = REPO / "scripts" / "check_requirement_coverage.py"

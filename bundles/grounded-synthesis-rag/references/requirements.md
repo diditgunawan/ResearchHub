@@ -21,3 +21,6 @@
 | SYN-018 | MUST | A golden eval set (≥ 100 items incl. unanswerable and adversarial) runs nightly and pre-release; thresholds from `05 §5`. |
 | SYN-019 | SHOULD | Streaming progress via SSE (retrieving, extracting, drafting, verifying). |
 | SYN-020 | MUST | Any aggregate "agreement" display lists all underlying studies, N, designs, and a method disclaimer; otherwise not shown. |
+| SYN-021 | MUST | A relevance floor is applied before the sufficiency gate: works or chunks with zero or sub-threshold relevance are never retrieved, even when the library is small; an irrelevant-query test must produce a refusal. |
+| SYN-022 | MUST | The verifier is independent of the generator: it reads cited chunk text from the database and judges the claim text; a claim built by copying the cited sentence is labelled `extractive` and not counted as verified; a circularity test proves unsupported claims can fail. |
+| SYN-023 | MUST | The relevance threshold is calibrated on the golden set; a single shared generic term never satisfies it; a verdict must come from a check independent of the generating call (a model's self-reported verdict, or a hard-coded default of 'supported', is not verification). |

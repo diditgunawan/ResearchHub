@@ -18,3 +18,4 @@
 | LIB-015 | MUST | Library list supports 5,000 items with server-side pagination, sort, filter; p95 ≤ 1.5 s. |
 | LIB-016 | MUST | Deleting an item/file is soft first, hard-purged within 30 days; export includes user notes. |
 | LIB-017 | MUST | PDF uploads offer `extract_only` mode: after successful extraction the original is deleted and only derived data is kept; deletion is verified and audited; failed extractions purge the file within 24 h. |
+| LIB-018 | SHOULD | Interoperability: import Rayyan CSV and RIS exports and ASReview-style CSV (title, abstract, label); export ASReview-compatible CSV; imported decisions are stored as `imported` records and never counted as a reviewer's own decision; round-trip fixtures pass. |

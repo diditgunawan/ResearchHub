@@ -22,3 +22,7 @@ Evidence base: pages for Consensus, JurnalHub, Open Knowledge Maps, and PaperTre
 
 ## Build-vs-link decision for topic maps
 Option A: build our own (MAP-001..006) so maps integrate with our library and screening. Option B: link out to Open Knowledge Maps for ad-hoc exploration and import resulting records. Default: A for integration, with B documented in the UI help as an alternative. Revisit if maintenance cost exceeds value.
+
+## Update v0.6: evidence-synthesis ecosystem
+Added a sixth reference class: the open-source evidence-synthesis tool index (140 tools, CC BY 4.0). It confirms the market splits into many single-purpose open tools (search, screening, extraction, bias, meta-analysis) with no single audited workspace, which supports our integrated-and-verified positioning, and it shows where users already expect interoperability (Rayyan exports, PRISMA generator, ASReview datasets). Gaps found in our spec: search log and snowballing, prioritised screening, protocol and PRISMA exports, risk-of-bias handling, benchmarks. See blueprints 20 and 21 and ADR-012.
+

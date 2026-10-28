@@ -16,3 +16,5 @@
 | ETH-013 | SHOULD | UI copy reminds authors they remain accountable for all content and citations. |
 | ETH-014 | MUST | Disclosure and labelling features have automated tests; copy reviewed for no compliance guarantees. |
 | ETH-015 | MUST | Outputs of mapping, positioning, and gap analysis use relative wording ("in the analyzed set"), never claim novelty/first/no prior work, and automated copy scans enforce this. |
+| ETH-016 | MUST | Provenance is truthful: `ai_usage_log` and `llm_usage_events` record only calls that actually happened (`mode` = `llm` or `rule_based`, real provider, model, tokens, cost); disclosure text is generated only from those records and never asserts verification that did not occur; a CI test fails if a model name is logged without an adapter call. |
+| ETH-017 | MUST | Model prices, token counts, and run records come from a versioned price table with source and date, or from provider responses; unknown values are stored as null, never guessed; every recorded `embedding_model` or model name matches an adapter that actually ran. |

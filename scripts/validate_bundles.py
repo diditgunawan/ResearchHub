@@ -8,15 +8,15 @@ import re, sys, csv, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BUNDLES = {
-    "scholarly-data-ingestion": ("DAT", 19),
-    "library-reference-management": ("LIB", 17),
-    "screening-prisma-workflow": ("SCR", 18),
-    "grounded-synthesis-rag": ("SYN", 20),
-    "journal-matching-submission": ("JRN", 12),
-    "research-integrity-ai-ethics": ("ETH", 15),
-    "literature-mapping-positioning": ("MAP", 19),
-    "fullstack-engineering-standards": ("ENG", 20),
-    "qa-security-deployment": ("QAS", 25),
+    "scholarly-data-ingestion": ("DAT", 21),
+    "library-reference-management": ("LIB", 18),
+    "screening-prisma-workflow": ("SCR", 21),
+    "grounded-synthesis-rag": ("SYN", 23),
+    "journal-matching-submission": ("JRN", 13),
+    "research-integrity-ai-ethics": ("ETH", 17),
+    "literature-mapping-positioning": ("MAP", 20),
+    "fullstack-engineering-standards": ("ENG", 31),
+    "qa-security-deployment": ("QAS", 34),
 }
 errors, warnings = [], []
 err = errors.append
@@ -69,7 +69,7 @@ for pfx, a, b in re.findall(r"\b([A-Z]{3})-(\d{3})\.\.(\d{3})\b", road):
 need = ["00-vision-scope.md","01-prd.md","02-architecture.md","03-data-model.sql","04-openapi.yaml",
         "05-rag-and-ai-spec.md","06-security-privacy.md","07-ux-flows.md","08-test-strategy.md",
         "09-deployment-ops.md","10-roadmap-backlog.md","11-source-terms-register.md","12-adr-index.md","13-glossary.md",
-        "15-reference-analysis.md","adr/ADR-007-evidence-first-mapping.md","adr/ADR-008-open-source-reuse-policy.md"]
+        "15-reference-analysis.md","16-scale-architecture.md","17-access-model.md","18-roadmap-v2.md","20-evidence-synthesis-ecosystem.md","21-benchmarking-plan.md","03b-data-model-v2.sql","adr/ADR-007-evidence-first-mapping.md","adr/ADR-008-open-source-reuse-policy.md","adr/ADR-009-single-owner-access-mode.md","adr/ADR-010-middle-scale-topology.md","adr/ADR-011-source-mirror-and-embed-on-add.md","adr/ADR-012-interoperate-not-rebuild.md"]
 for f in need:
     if not (ROOT / "blueprints" / f).exists(): err(f"blueprints/{f} missing")
 for f in ["docker-compose.yml", ".env.example", "Makefile"]:
@@ -104,6 +104,7 @@ sql = read(ROOT / "blueprints" / "03-data-model.sql")
 try:
     import pglast
     pglast.parse_sql(sql)
+    pglast.parse_sql(read(ROOT / "blueprints" / "03b-data-model-v2.sql"))
 except ImportError:
     warn("pglast not installed; skipped SQL syntax parse (pip install pglast)")
 except Exception as e:
