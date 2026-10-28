@@ -23,8 +23,8 @@ async def test_unauthorized_returns_rfc7807(client: AsyncClient):
 async def test_project_not_found_returns_rfc7807(client: AsyncClient):
     """ENG-006: Nonexistent resource query returns RFC 7807 problem details."""
     # Authenticate first
-    link_res = await client.post("/auth/magic-link", json={"email": "tester@example.org"})
-    token = link_res.json()["token"]
+    from tests.conftest import get_test_link_token
+    token = await get_test_link_token("tester@example.org")
     sess_res = await client.post("/auth/session", json={"token": token})
     session_token = sess_res.json()["session_token"]
     

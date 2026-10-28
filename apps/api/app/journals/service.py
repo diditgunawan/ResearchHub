@@ -9,16 +9,18 @@ from fastapi import HTTPException
 
 from app.journals.models import Journal
 from app.mapping.service import tokenize_clean, extract_top_concepts, compute_cosine_similarity, compute_jaccard
+from app.core.config import settings
 
 import json
 import pathlib
 
-# Verified Initial Corpus loaded dynamically from external seed data (JRN-013 / P6 compliance)
+# Verified Initial Corpus loaded dynamically from external seed data (JRN-013, QAS-032 / P13 demo isolation)
 _SEED_PATH = pathlib.Path(__file__).parents[2] / "data" / "seed_journals.json"
 
 
 def _load_verified_journals():
-    if not _SEED_PATH.exists():
+    # P13: Scholarly data shipped with app must be placed behind DEMO_DATA / DEMO_MODE flag
+    if not settings.DEMO_DATA or not _SEED_PATH.exists():
         return []
     with open(_SEED_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -35,7 +37,9 @@ class JournalService:
 
     @staticmethod
     async def ensure_seeded(db: AsyncSession):
-        """Seed verified journals if table is empty."""
+        """Seed verified journals behind DEMO_DATA / DEMO_MODE flag (P13)."""
+        if not settings.DEMO_DATA:
+            return
         res = await db.execute(select(Journal))
         existing = res.scalars().all()
         if not existing:

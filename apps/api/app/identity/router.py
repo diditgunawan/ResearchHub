@@ -58,19 +58,17 @@ async def get_current_admin_user(
 @router.post("/auth/magic-link", response_model=MagicLinkResponse, response_model_exclude_none=True)
 async def request_magic_link(
     payload: MagicLinkRequest,
-    x_test_echo: Optional[str] = Header(None, alias="X-Test-Echo-Token"),
     db: AsyncSession = Depends(get_db),
 ):
     token = await IdentityService.request_magic_link(db, payload.email)
-    # Strictly zero secrets returned over HTTP (P1 compliance).
+    # Strictly zero secrets returned over HTTP (P1 & P9 compliance).
     # In local development, print to console loopback for convenience.
     if settings.APP_ENV in ["local", "test"]:
         print(f"[AUTH DEV LOG] Single-use token for {payload.email}: {token}")
 
-    ret_token = token if (x_test_echo == "1" and settings.APP_ENV in ["local", "test"]) else None
     return MagicLinkResponse(
         message="Magic login link generated. Please check your inbox.",
-        token=ret_token,
+        token=None,
     )
 
 
@@ -180,10 +178,13 @@ async def passkey_login_verify(
     db: AsyncSession = Depends(get_db),
 ):
     """Authenticate via enrolled Passkey credential."""
+    if not payload.signature:
+        raise UnauthorizedError("Passkey login requires a verified signature", code="SIGNATURE_REQUIRED")
+
     ip = request.client.host if request.client else None
     ua = request.headers.get("user-agent")
     user, session_token = await IdentityService.login_with_passkey(
-        db, credential_id=payload.credential_id, ip=ip, user_agent=ua
+        db, credential_id=payload.credential_id, signature=payload.signature, ip=ip, user_agent=ua
     )
 
     response.set_cookie(

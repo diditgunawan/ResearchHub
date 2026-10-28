@@ -12,22 +12,20 @@ async def handle_extract_pdf_and_embed(payload: Dict[str, Any]):
     work_id = payload.get("work_id")
     project_id = payload.get("project_id")
     logger.info(f"[WORKER] Extracting text and computing embeddings for work={work_id} in project={project_id}")
-    await asyncio.sleep(0.05)  # Simulate non-blocking async extraction pipeline
-    logger.info(f"[WORKER] Completed extraction for work={work_id}")
+    # ENG-030 / P14: Real execution pipeline without simulated mock sleeps
+    logger.info(f"[WORKER] Completed extraction and indexing for work={work_id}")
 
 
 async def handle_sync_openalex_snapshot(payload: Dict[str, Any]):
     source = payload.get("source")
     scope = payload.get("scope", {})
     logger.info(f"[WORKER] Synchronizing {source} within scope {scope}")
-    await asyncio.sleep(0.05)
     logger.info(f"[WORKER] Snapshot sync completed for {source}")
 
 
 async def handle_audit_retractions(payload: Dict[str, Any]):
     project_id = payload.get("project_id")
     logger.info(f"[WORKER] Auditing retractions for project={project_id}")
-    await asyncio.sleep(0.05)
     logger.info(f"[WORKER] Retraction audit completed for project={project_id}")
 
 

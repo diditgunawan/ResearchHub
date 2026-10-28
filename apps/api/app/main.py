@@ -17,6 +17,8 @@ from app.synthesis.router import router as synthesis_router
 from app.integrity.router import router as integrity_router
 from app.mapping.router import router as mapping_router
 from app.journals.router import router as journals_router
+import app.identity.models
+import app.projects.models
 import app.works.models
 import app.library.models
 import app.screening.models

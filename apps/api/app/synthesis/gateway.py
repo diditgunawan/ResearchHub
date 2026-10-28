@@ -19,6 +19,16 @@ from typing import List, Dict, Any, Optional, Tuple
 from app.core.config import settings
 
 
+# Dated model pricing table per million tokens (ETH-017 / 2026-10)
+MODEL_PRICING_TABLE = {
+    "gemini-3.8-flash": {"date": "2026-10", "input_per_m": 0.75, "output_per_m": 3.75},
+    "gemini-3.1-pro-preview": {"date": "2026-10", "input_per_m": 1.25, "output_per_m": 5.00},
+    "gemini-1.5-flash": {"date": "2024-05", "input_per_m": 0.075, "output_per_m": 0.30},
+    "ollama": {"date": "2026-10", "input_per_m": 0.0, "output_per_m": 0.0},
+    "rule-engine": {"date": "2026-10", "input_per_m": 0.0, "output_per_m": 0.0},
+}
+
+
 class ModelGateway:
     @staticmethod
     async def extract_atomic_claims(
@@ -133,8 +143,9 @@ class ModelGateway:
             tokens_in = usage.get("promptTokenCount", 0)
             tokens_out = usage.get("candidatesTokenCount", 0)
             
-            # Gemini Flash standard pricing ($0.15/1M in, $0.60/1M out)
-            cost_usd = (tokens_in * 0.15 + tokens_out * 0.60) / 1_000_000.0
+            # ETH-017: Dated pricing lookup from verified rate card
+            rates = MODEL_PRICING_TABLE.get(model, MODEL_PRICING_TABLE["gemini-3.8-flash"])
+            cost_usd = (tokens_in * rates["input_per_m"] + tokens_out * rates["output_per_m"]) / 1_000_000.0
 
             content_text = data["candidates"][0]["content"]["parts"][0]["text"]
             parsed = json.loads(content_text)

@@ -28,6 +28,19 @@ async def issue_link(db, email: str) -> str:
     return raw_token
 
 
+async def bootstrap_owner(db, email: str) -> User:
+    """Helper for testing to explicitly bootstrap an owner with system_admin rights."""
+    clean_email = email.strip().lower()
+    user = await IdentityService.get_user_by_email(db, clean_email)
+    if not user:
+        user = User(email=clean_email, is_system_admin=True)
+        db.add(user)
+    else:
+        user.is_system_admin = True
+    await db.commit()
+    return user
+
+
 async def make_session(db, email: str) -> str:
     """Helper for testing and truth audit probes to obtain a valid session token directly."""
     clean_email = email.strip().lower()
@@ -36,5 +49,6 @@ async def make_session(db, email: str) -> str:
         user = User(email=clean_email)
         db.add(user)
         await db.flush()
+    _, session_token = await IdentityService.create_server_session(db, user.id)
     await db.commit()
-    return create_session_token(user.id)
+    return session_token

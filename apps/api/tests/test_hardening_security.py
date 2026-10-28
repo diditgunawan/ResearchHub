@@ -26,16 +26,17 @@ async def test_tenant_isolation_boundary_enforcement(client: AsyncClient):
     User A's project items must never be accessible or modifiable by User B.
     """
     # 1. Setup Tenant A
-    link_a = await client.post("/auth/magic-link", json={"email": "alice.tenant@ox.ac.uk"})
-    sess_a = await client.post("/auth/session", json={"token": link_a.json()["token"]})
+    from tests.conftest import get_test_link_token
+    token_a = await get_test_link_token("alice.tenant@ox.ac.uk")
+    sess_a = await client.post("/auth/session", json={"token": token_a})
     headers_a = {"Authorization": f"Bearer {sess_a.json()['session_token']}"}
 
     proj_a = await client.post("/projects", json={"name": "Alice Confidential Oncology Review"}, headers=headers_a)
     proj_a_id = proj_a.json()["id"]
 
     # 2. Setup Tenant B
-    link_b = await client.post("/auth/magic-link", json={"email": "bob.adversary@external.com"})
-    sess_b = await client.post("/auth/session", json={"token": link_b.json()["token"]})
+    token_b = await get_test_link_token("bob.adversary@external.com")
+    sess_b = await client.post("/auth/session", json={"token": token_b})
     headers_b = {"Authorization": f"Bearer {sess_b.json()['session_token']}"}
 
     proj_b = await client.post("/projects", json={"name": "Bob Separate Cardiology Review"}, headers=headers_b)

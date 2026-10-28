@@ -4,8 +4,9 @@ from httpx import AsyncClient
 # SYNTHETIC TEST FIXTURE (SYN-001..SYN-010, ETH-001..ETH-007)
 
 async def create_user_and_project(client: AsyncClient, email: str, project_name: str):
-    link = await client.post("/auth/magic-link", json={"email": email})
-    sess = await client.post("/auth/session", json={"token": link.json()["token"]})
+    from tests.conftest import get_test_link_token
+    token = await get_test_link_token(email)
+    sess = await client.post("/auth/session", json={"token": token})
     headers = {"Authorization": f"Bearer {sess.json()['session_token']}"}
     proj = await client.post("/projects", json={"name": project_name}, headers=headers)
     return {

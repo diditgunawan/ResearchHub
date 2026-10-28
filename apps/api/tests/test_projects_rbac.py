@@ -4,8 +4,8 @@ from httpx import AsyncClient
 # SYNTHETIC TEST FIXTURE (ENG-008: Role-Based Access Control Matrix)
 
 async def create_authenticated_user(client: AsyncClient, email: str) -> dict:
-    link_res = await client.post("/auth/magic-link", json={"email": email})
-    token = link_res.json()["token"]
+    from tests.conftest import get_test_link_token
+    token = await get_test_link_token(email)
     sess_res = await client.post("/auth/session", json={"token": token})
     session_token = sess_res.json()["session_token"]
     user = sess_res.json()["user"]

@@ -5,14 +5,15 @@ from httpx import AsyncClient
 
 async def setup_review_environment(client: AsyncClient):
     """Creates owner, reviewer2, and a project with 3 imported works."""
+    from tests.conftest import get_test_link_token
     # Owner
-    owner_link = await client.post("/auth/magic-link", json={"email": "owner.pi@university.edu"})
-    owner_sess = await client.post("/auth/session", json={"token": owner_link.json()["token"]})
+    owner_token = await get_test_link_token("owner.pi@university.edu")
+    owner_sess = await client.post("/auth/session", json={"token": owner_token})
     owner_headers = {"Authorization": f"Bearer {owner_sess.json()['session_token']}"}
 
     # Reviewer 2
-    rev_link = await client.post("/auth/magic-link", json={"email": "reviewer2@university.edu"})
-    rev_sess = await client.post("/auth/session", json={"token": rev_link.json()["token"]})
+    rev_token = await get_test_link_token("reviewer2@university.edu")
+    rev_sess = await client.post("/auth/session", json={"token": rev_token})
     rev_headers = {"Authorization": f"Bearer {rev_sess.json()['session_token']}"}
 
     # Create project

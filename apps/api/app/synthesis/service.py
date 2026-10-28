@@ -73,16 +73,38 @@ class SynthesisService:
 
         works = (await db.execute(stmt)).scalars().all()
 
-        # Score relevance by keyword match in title and abstract
+        # SYN-021 & SYN-023: Calibrated relevance floor with non-generic term requirements
+        GENERIC_ACADEMIC_TERMS = {
+            "study", "analysis", "review", "research", "method", "paper",
+            "investigation", "approach", "effects", "using", "evidence", "findings"
+        }
+        query_terms = [w.lower() for w in re.findall(r"\b[A-Za-z0-9]{3,}\b", query)]
+        distinct_query_terms = set(query_terms)
+
         scored_works = []
         for w in works:
             content = f"{w.title} {w.abstract or ''}".lower()
-            score = sum(1 for kw in keywords if kw in content)
-            scored_works.append((score, w))
+            matched_terms = {kw for kw in distinct_query_terms if kw in content}
+            non_generic_matched = {kw for kw in matched_terms if kw not in GENERIC_ACADEMIC_TERMS}
+
+            # SYN-021 / P11 Relevance Floor:
+            # - At least 2 distinct matched terms (with at least 1 non-generic term)
+            # - One shared generic word like 'study' alone never passes the floor
+            is_relevant = False
+            if len(distinct_query_terms) >= 2:
+                if len(matched_terms) >= 2 and len(non_generic_matched) >= 1:
+                    is_relevant = True
+            elif len(distinct_query_terms) == 1:
+                if len(non_generic_matched) >= 1:
+                    is_relevant = True
+
+            if is_relevant:
+                score = len(matched_terms) * 1.5 + len(non_generic_matched)
+                scored_works.append((score, w))
 
         # Sort by relevance score desc
         scored_works.sort(key=lambda x: x[0], reverse=True)
-        top_works = [w for score, w in scored_works[:limit] if score > 0]
+        top_works = [w for score, w in scored_works[:limit]]
 
         results = []
         for w in top_works:

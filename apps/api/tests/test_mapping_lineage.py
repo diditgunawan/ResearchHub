@@ -5,8 +5,9 @@ from httpx import AsyncClient
 
 async def setup_mapping_environment(client: AsyncClient):
     """Creates user, project, and imports a 4-paper chronological literature set."""
-    link = await client.post("/auth/magic-link", json={"email": "curator@lab.org"})
-    sess = await client.post("/auth/session", json={"token": link.json()["token"]})
+    from tests.conftest import get_test_link_token
+    token = await get_test_link_token("curator@lab.org")
+    sess = await client.post("/auth/session", json={"token": token})
     headers = {"Authorization": f"Bearer {sess.json()['session_token']}"}
 
     proj = await client.post("/projects", json={"name": "Generative AI in Clinical Informatics"}, headers=headers)

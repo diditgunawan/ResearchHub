@@ -1,20 +1,21 @@
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.testing import bootstrap_owner, issue_link
 
 # SYNTHETIC TEST FIXTURE (ADR-009: Single-Owner Mode & WebAuthn / Passkeys)
 
 
 @pytest.mark.asyncio
-async def test_single_owner_bootstrap_and_registration_gate(client: AsyncClient):
-    """ADR-009: First user becomes system_admin; subsequent registrations rejected in single_owner mode."""
+async def test_single_owner_bootstrap_and_registration_gate(client: AsyncClient, db_session: AsyncSession):
+    """ADR-009: Explicit bootstrap grants system_admin; subsequent registrations rejected in single_owner mode."""
     from app.core.config import settings
     settings.ACCESS_MODE = "single_owner"
 
-    # 1. Bootstrap owner
+    # 1. Bootstrap owner via CLI / admin bootstrap helper (ENG-029)
     owner_email = "founding.scholar@institute.edu"
-    link_res = await client.post("/auth/magic-link", json={"email": owner_email})
-    assert link_res.status_code == 200
-    token = link_res.json()["token"]
+    await bootstrap_owner(db_session, owner_email)
+    token = await issue_link(db_session, owner_email)
 
     sess_res = await client.post("/auth/session", json={"token": token})
     assert sess_res.status_code == 200
@@ -29,11 +30,10 @@ async def test_single_owner_bootstrap_and_registration_gate(client: AsyncClient)
 
 
 @pytest.mark.asyncio
-async def test_passkey_enrollment_and_login_flow(client: AsyncClient):
+async def test_passkey_enrollment_and_login_flow(client: AsyncClient, db_session: AsyncSession):
     """ADR-009 / Blueprint 17: FIDO2 Passkey enrollment and login verification ceremony."""
     email = "passkey.user@lab.org"
-    link_res = await client.post("/auth/magic-link", json={"email": email})
-    token = link_res.json()["token"]
+    token = await issue_link(db_session, email)
     sess_res = await client.post("/auth/session", json={"token": token})
     session_token = sess_res.json()["session_token"]
     auth_header = {"Authorization": f"Bearer {session_token}"}
@@ -72,7 +72,7 @@ async def test_passkey_enrollment_and_login_flow(client: AsyncClient):
     assert login_chal_res.status_code == 200
     assert "challenge" in login_chal_res.json()
 
-    # 5. Authenticate with enrolled passkey
+    # 5. Authenticate with enrolled passkey (signature required per P12)
     login_verify_res = await client.post(
         "/auth/passkey/login-verify",
         json={"credential_id": cred_id, "signature": "mock-fido2-signature"},
@@ -89,14 +89,16 @@ async def test_passkey_enrollment_and_login_flow(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_admin_settings_access_control(client: AsyncClient):
+async def test_admin_settings_access_control(client: AsyncClient, db_session: AsyncSession):
     """Blueprint 17: Admin settings endpoints are strictly guarded by is_system_admin."""
     from app.core.config import settings
     settings.ACCESS_MODE = "single_owner"
 
-    # 1. First user is owner / system admin
-    admin_link = await client.post("/auth/magic-link", json={"email": "admin.owner@hub.org"})
-    admin_sess = await client.post("/auth/session", json={"token": admin_link.json()["token"]})
+    # 1. First user is owner / system admin bootstrapped explicitly
+    admin_email = "admin.owner@hub.org"
+    await bootstrap_owner(db_session, admin_email)
+    admin_token = await issue_link(db_session, admin_email)
+    admin_sess = await client.post("/auth/session", json={"token": admin_token})
     admin_auth = {"Authorization": f"Bearer {admin_sess.json()['session_token']}"}
 
     # Admin reads settings

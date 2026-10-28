@@ -49,9 +49,9 @@ class IdentityService:
                     "Registration is closed in single-owner mode. Only the registered administrator may log in.",
                     code="REGISTRATION_CLOSED",
                 )
-            # First user becomes system administrator
-            is_admin = True if user_count == 0 else False
-            user = User(email=clean_email, is_system_admin=is_admin)
+            # Anonymous callers are NEVER system administrators (ENG-029).
+            # System administrators must be provisioned via CLI (bootstrap-owner) or initial setup secret.
+            user = User(email=clean_email, is_system_admin=False)
             db.add(user)
             await db.flush()
 
@@ -179,9 +179,12 @@ class IdentityService:
 
     @staticmethod
     async def login_with_passkey(
-        db: AsyncSession, credential_id: str, ip: Optional[str] = None, user_agent: Optional[str] = None
+        db: AsyncSession, credential_id: str, signature: Optional[str] = None, ip: Optional[str] = None, user_agent: Optional[str] = None
     ) -> Tuple[User, str]:
-        """Sign in using a registered Passkey credential."""
+        """Sign in using a registered Passkey credential, requiring verified signature."""
+        if not signature or not signature.strip():
+            raise UnauthorizedError("Passkey signature is missing or unverified", code="PASSKEY_SIGNATURE_REQUIRED")
+
         stmt = select(WebauthnCredential).where(WebauthnCredential.credential_id == credential_id)
         cred = (await db.execute(stmt)).scalar_one_or_none()
         if not cred:

@@ -76,8 +76,9 @@ PRISMA 2020 Statement,Page MJ; McKenzie JE,2021,BMJ,10.1136/bmj.n71
 async def test_library_import_and_export_roundtrip(client: AsyncClient):
     """LIB-002, LIB-004, LIB-009: Import RIS text into project library and export back to BibTeX and CSV."""
     # 1. Authenticate user and create project
-    link = await client.post("/auth/magic-link", json={"email": "lib.owner@lab.org"})
-    sess = await client.post("/auth/session", json={"token": link.json()["token"]})
+    from tests.conftest import get_test_link_token
+    token = await get_test_link_token("lib.owner@lab.org")
+    sess = await client.post("/auth/session", json={"token": token})
     headers = {"Authorization": f"Bearer {sess.json()['session_token']}"}
 
     proj = await client.post("/projects", json={"name": "Evidence Base Library"}, headers=headers)

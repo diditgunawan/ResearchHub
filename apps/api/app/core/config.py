@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     REGISTRATION_POLICY: str = Field(default="closed", description="closed, invite_only, or open")
     WEBAUTHN_RP_ID: str = Field(default="localhost", description="Relying party ID for WebAuthn")
     WEBAUTHN_RP_NAME: str = Field(default="ResearchHub", description="Relying party name")
+    DEMO_DATA: bool = Field(default=True, description="Enable demo seed datasets (behind demo flag per P13)")
+    DEMO_MODE: bool = Field(default=False, description="Display demo banner when using seeded data")
 
     # Open Scholarly API Keys & Mailto
     OPENALEX_MAILTO: Optional[str] = "researchforge@example.org"

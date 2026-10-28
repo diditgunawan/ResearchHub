@@ -1,17 +1,22 @@
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.testing import issue_link
 
 # SYNTHETIC TEST FIXTURE (ENG-007: Single-use Magic Link & Session Management)
 
 @pytest.mark.asyncio
-async def test_magic_link_flow_and_session_cookie(client: AsyncClient):
+async def test_magic_link_flow_and_session_cookie(client: AsyncClient, db_session: AsyncSession):
     """ENG-007: Full passwordless auth flow via magic link and secure session cookie."""
     email = "researcher.phd@university.edu"
     
-    # 1. Request magic link
+    # 1. Request magic link (HTTP response never leaks token)
     link_res = await client.post("/auth/magic-link", json={"email": email})
     assert link_res.status_code == 200
-    token = link_res.json()["token"]
+    assert link_res.json().get("token") is None
+
+    # Obtain single-use link token via testing helper (ENG-022 / P1 / P9)
+    token = await issue_link(db_session, email)
     assert token is not None
 
     # 2. Redeem magic link token
