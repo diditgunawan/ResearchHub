@@ -10,7 +10,7 @@ import sys
 import argparse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.core.database import async_session_factory
+from app.core.database import async_session_maker as async_session_factory
 from app.identity.models import User, InstanceSetting
 from app.identity.service import IdentityService
 
